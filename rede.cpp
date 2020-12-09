@@ -196,6 +196,7 @@ class rede
             return a + r;
         }
 
+        /* se for atualizar o layType para int precisa modificar esse random Float para um random int msm */
         void update_bias_weights(layType ***mat, layType **array, int lin, int col, layType weights_range, layType bias_range){
             for (int i = 0; i < lin; i++)
             {
@@ -208,13 +209,26 @@ class rede
             
         }
 
-        void update_weights_and_bias(layType weights_range, layType bias_range){
-            
-            
-            
-            
+        void update_weights_and_bias_layer(layType weights_range, layType bias_range, int layer_to_change){
+            switch (layer_to_change)
+            {
+            case 1:
+                update_bias_weights(&weights_layer_1, &bias_layer_1, input_size, size_layer_1, weights_range, bias_range);
+                break;
+            case 2:
+                update_bias_weights(&weights_layer_2, &bias_layer_2, size_layer_1, size_layer_2, weights_range, bias_range);
+                break;
+            case 3:
+                update_bias_weights(&weights_layer_3, &bias_layer_3, size_layer_2, size_layer_3, weights_range, bias_range);
+                break;
+            case 4:
+                update_bias_weights(&weights_layer_4, &bias_layer_4, size_layer_3, size_layer_4, weights_range, bias_range);
+                break;
+            case 5:
+                update_bias_weights(&weights_output, &bias_output, size_layer_4, output_size, weights_range, bias_range);
+                break;
+            }
         }
-
 };
 
 
@@ -222,6 +236,9 @@ class rede
 
 int main(int argc, char const *argv[])
 {
+
+    
+
     
     return 0;
 }
