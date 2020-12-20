@@ -58,7 +58,8 @@ Bixinho wilson =     {0.05,   0,0,0,            0.8,0,0   ,energiaInicial, 0    
 Bixinho robson =     {0.05,   -0.3,-0.3,M_PI,   0,0.8,0   ,energiaInicial, 0     , 0    , 0.6};
 Bixinho dikson =     {0.05,    -0.5,0,M_PI/2,    0,0,0.8  ,energiaInicial, 0     , 0    , 0.6};
 
-Comida melao =       {0.02,    0.25,0,M_PI/2,    0,0.8,0.8,     true};
+Comida *melao;
+int qMelao = 10;
 
 
 //---------- Protótipos de função ----------//
@@ -72,10 +73,21 @@ float decideMovement(Bixinho *b, Comida *c);
 
 bool checkForColisionBC(Bixinho *b, Comida *c);
 bool checkForColisionBB(Bixinho b1, Bixinho b2);
+float RandomFloat(float a, float b);
 
-
+ 
 //------------------ Main -----------------//
 int main(int argc, char** argv){
+
+  melao = (Comida *)malloc(qMelao * sizeof(Comida));
+  //--inicializa as comidas--//
+  for (int i = 0; i < qMelao; i++)
+  {
+    melao[i] = {0.02,    RandomFloat(-1,1),RandomFloat(-1,1),0,    0,0.8,0.8,     true};
+  }
+  
+
+
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_RGB);
   glutInitWindowSize(windowWidth, windowHeight);
@@ -97,10 +109,14 @@ void draw(){
   drawBixinho(robson);
   drawBixinho(dikson);
 
-  if (melao.active){
-    drawComida(melao);
+  for (int i = 0; i < qMelao; i++)
+  {
+    if (melao[i].active){
+      drawComida(melao[i]);
+    }
   }
-
+  
+  
   glutSwapBuffers();
 }
 
@@ -116,23 +132,18 @@ void timer(int){
   moveBixinho(&dikson, 0.007);
 
   // Para girar os bixinhos
-  decideMovement(&wilson, &melao);
-  decideMovement(&robson, &melao);
-  decideMovement(&dikson, &melao);
+  for (int i = 0; i < qMelao; i++)
+  {
+    decideMovement(&wilson, &melao[i]);
+    decideMovement(&robson, &melao[i]);
+    decideMovement(&dikson, &melao[i]);
+
+    checkForColisionBC(&wilson, &melao[i]);
+    checkForColisionBC(&robson, &melao[i]);
+    checkForColisionBC(&dikson, &melao[i]);
+  }
   
 
-  if (checkForColisionBC(&wilson, &melao))
-  {
-      cout << "got the melao" << endl;
-  }
-  if (checkForColisionBC(&robson, &melao))
-  {
-      cout << "got the melao" << endl;
-  }
-  if (checkForColisionBC(&dikson, &melao))
-  {
-      cout << "got the melao" << endl;
-  }
 
   // Executa a função draw para desenhar novamente
   glutPostRedisplay();
@@ -219,9 +230,9 @@ float decideMovement(Bixinho *b, Comida *c){
   }else{
     // b->theta -= 0.02;
     if (rand() % 2 == 0)
-      b->theta += RandomFloat(0.01, 0.2);
+      b->theta += RandomFloat(0.01, 0.1);
     else
-      b->theta -= RandomFloat(0.01, 0.2);
+      b->theta -= RandomFloat(0.01, 0.1);
   }
 
 
@@ -234,11 +245,11 @@ bool checkForColisionBC(Bixinho *b, Comida *c){
 
     if (c->active && checkIf2CirclesColide(b->x,b->y,b->radius, c->x,c->y,c->radius))
     {
-        // c->active = false;
+        c->active = false;
         
         b->pontos += 1;
-        c->x = RandomFloat(0.1, 1);
-        c->y = RandomFloat(0.1, 1);
+        // c->x = RandomFloat(0.1, 1);
+        // c->y = RandomFloat(0.1, 1);
         return true;
     }else{
         return false;
