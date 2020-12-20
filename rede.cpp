@@ -39,7 +39,7 @@ class rede
             layType * array = (layType *)malloc(sizeof(int) * n);
             return array;
         }
-        void free_matrix(int ***mat,int lin){
+        void free_matrix(layType ***mat,int lin){
             for (int i = 0; i < lin; i++)
             {
                 free(*mat[i]);
@@ -51,7 +51,7 @@ class rede
         
 
         layType sigmoid(int x){
-            return -x;
+            return x / (1 + abs(x));
         }
 
         layType *calculate_w_b_i(layType **weights_layer, layType *bias_layer,
@@ -176,11 +176,11 @@ class rede
         }
         
         void free_all_layers(){
-            free(&weights_layer_1);
-            free(&weights_layer_2);
-            free(&weights_layer_3);
-            free(&weights_layer_4);
-            free(&weights_output);
+            free_matrix(&weights_layer_1, input_size);
+            free_matrix(&weights_layer_2, size_layer_1);
+            free_matrix(&weights_layer_3, size_layer_2);
+            free_matrix(&weights_layer_4, size_layer_3);
+            free_matrix(&weights_output,  size_layer_4);
 
             free(bias_layer_1);
             free(bias_layer_2);
