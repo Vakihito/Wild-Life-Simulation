@@ -67,7 +67,7 @@ class rede
                 dimensions (lin x 1)  
             */
 
-            layType out_lay[lin];
+            layType *out_lay = (layType *)malloc(sizeof(layType) * lin) ;
             memset(out_lay, 0, lin * sizeof(layType));
             for (int i = 0; i < lin; i++)
             {
@@ -84,6 +84,7 @@ class rede
         }
     
     public:
+
         layType **weights_layer_1;
         layType *bias_layer_1;
 
@@ -231,16 +232,38 @@ class rede
         }
 };
 
+float RandomFloat(float a, float b) {
+    float random = ((float) rand()) / (float) RAND_MAX;
+    float diff = b - a;
+    float r = random * diff;
+    return a + r;
+}
 
+
+
+layType **create_weights(layType weights_range,
+                         int lin, int col){
+    
+    layType ** weights = (layType **)malloc(sizeof(layType *) * lin);
+    for (int i = 0; i < col; i++)
+    {
+        weights[i] = (layType *)malloc(sizeof(layType) * col);
+    }
+    for (int i = 0; i < lin; i++)
+    {
+        for (int j = 0; j < col; j++)
+        {
+            weights[i][j] = RandomFloat(0, weights_range);
+        }
+    }
+    
+    return weights;
+}
 
 
 int main(int argc, char const *argv[])
 {
 
-    
 
-    
     return 0;
 }
-
-
