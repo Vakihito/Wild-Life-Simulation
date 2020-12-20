@@ -11,12 +11,34 @@ using namespace std;
 #define windowWidth 900
 #define windowHeight 900
 
+/*
+    inicialmente andaremos por x dias, os indivíduos durante esse tempo 
+    guardam comida, o que tiver mais comida é escolhido como elite, 
+    dessa forma ao final do processo o podemos fazer toneio de 2 ou elitismo.
+
+    como compilar : g++ versao1.cpp  -lglut -lGLU -lGL && ./a.out
+*/
+
 typedef struct _bixinho{
+  /* tamanho  */
   float radius;
   float x;
   float y;
   float theta;
   float r,g,b;
+
+  /* energia = (1/2) * (m v^2)
+     no nosso caso será (tamanho * v^2)/2 */
+  float energia;
+  /* o número de comidas adquiridas ao longo do tempo x */
+  float pontos;
+  /* velocidade - que o animal se move   */
+  float velocidade;
+  /* percepção - raio em que o boneco começa a caminhar*/
+  float percep;
+  
+  
+  
 }Bixinho;
 
 // Cria os bixinhos: (radius) (x,y,theta)       (r,g,b)
