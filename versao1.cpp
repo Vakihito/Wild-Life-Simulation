@@ -10,6 +10,7 @@ using namespace std;
 
 #define windowWidth 900
 #define windowHeight 900
+#define energiaInicial 100
 
 /*
     inicialmente andaremos por x dias, os indivíduos durante esse tempo 
@@ -52,10 +53,10 @@ typedef struct _comida{
 }Comida;
 
 
-// Cria os bixinhos: (radius) (x,y,theta)       (r,g,b)
-Bixinho wilson =     {0.05,   0,0,0,            0.8,0,0};
-Bixinho robson =     {0.05,   -0.3,-0.3,M_PI,   0,0.8,0};
-Bixinho dikson =     {0.05,    -0.5,0,M_PI/2,    0,0,0.8};
+// Cria os bixinhos: (radius) (x,y,theta)       (r,g,b)   (energia ini)    pontos
+Bixinho wilson =     {0.05,   0,0,0,            0.8,0,0   ,energiaInicial, 0     };
+Bixinho robson =     {0.05,   -0.3,-0.3,M_PI,   0,0.8,0   ,energiaInicial, 0     };
+Bixinho dikson =     {0.05,    -0.5,0,M_PI/2,    0,0,0.8  ,energiaInicial, 0     };
 
 Comida melao =       {0.02,    0.25,0,M_PI/2,    0,0.8,0.8,     true};
 
@@ -68,7 +69,7 @@ void moveBixinho(Bixinho *bixinho, float distance);// Mover bixinho
 void drawBixinho(Bixinho bixinho);// Desenhar bixinho
 void drawComida(Comida comida);
 
-bool checkForColisionBC(Bixinho b, Comida *c);
+bool checkForColisionBC(Bixinho *b, Comida *c);
 bool checkForColisionBB(Bixinho b1, Bixinho b2);
 
 
@@ -118,7 +119,7 @@ void timer(int){
   rotateBixinho(&robson, 0.04);
   rotateBixinho(&dikson, -0.02);
 
-  if (checkForColisionBC(dikson, &melao))
+  if (checkForColisionBC(&dikson, &melao))
   {
       cout << "got the melao" << endl;
   }
@@ -165,11 +166,12 @@ bool checkIf2CirclesColide( float x1, float y1, float r1 ,
     verifica colisão entre o bixo b e a comida c
 */
 
-bool checkForColisionBC(Bixinho b, Comida *c){
+bool checkForColisionBC(Bixinho *b, Comida *c){
 
-    if (c->active && checkIf2CirclesColide(b.x,b.y,b.radius, c->x,c->y,c->radius))
+    if (c->active && checkIf2CirclesColide(b->x,b->y,b->radius, c->x,c->y,c->radius))
     {
         c->active = false;
+        b->pontos += 1;
         return true;
     }else{
         return false;
