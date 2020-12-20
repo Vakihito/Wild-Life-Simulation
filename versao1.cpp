@@ -55,7 +55,7 @@ Bixinho wilson =     {0.07,   0,0,0,            0.8,0,0};
 Bixinho robson =     {0.05,   -0.3,-0.3,M_PI,   0,0.8,0};
 Bixinho dikson =     {0.1,    -0.5,0,M_PI/2,    0,0,0.8};
 
-comida melao =       {0.1,    -0.5,0,M_PI/2,    0,0,0.1}
+comida melao =       {0.1,    -0.5,0,M_PI/2,    0,0,0.1};
 
 
 //---------- Protótipos de função ----------//
