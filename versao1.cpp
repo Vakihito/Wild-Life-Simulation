@@ -157,7 +157,10 @@ void moveBixinho(Bixinho *bixinho, float distance){
 
   // Impede que o wilson saia da tela
   bixinho->x = bixinho->x>1 ? -1 : bixinho->x;
+  bixinho->x = bixinho->x<-1 ? 1 : bixinho->x;
+
   bixinho->y = bixinho->y>1 ? -1 : bixinho->y;
+  bixinho->y = bixinho->y<-1 ? 1 : bixinho->y;
 
 }
 
