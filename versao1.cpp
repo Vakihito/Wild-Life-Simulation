@@ -47,15 +47,17 @@ typedef struct _comida{
   float theta;
   float r,g,b;
 
+  bool active;
+
 }Comida;
 
 
 // Cria os bixinhos: (radius) (x,y,theta)       (r,g,b)
-Bixinho wilson =     {0.07,   0,0,0,            0.8,0,0};
+Bixinho wilson =     {0.05,   0,0,0,            0.8,0,0};
 Bixinho robson =     {0.05,   -0.3,-0.3,M_PI,   0,0.8,0};
-Bixinho dikson =     {0.1,    -0.5,0,M_PI/2,    0,0,0.8};
+Bixinho dikson =     {0.05,    -0.5,0,M_PI/2,    0,0,0.8};
 
-Comida melao =       {0.02,    -0.5,0,M_PI/2,    0,0.8,0.8};
+Comida melao =       {0.02,    0.25,0,M_PI/2,    0,0.8,0.8,     true};
 
 
 //---------- Protótipos de função ----------//
@@ -65,6 +67,10 @@ void rotateBixinho(Bixinho *bixinho, float angle);// Girar bixinho
 void moveBixinho(Bixinho *bixinho, float distance);// Mover bixinho
 void drawBixinho(Bixinho bixinho);// Desenhar bixinho
 void drawComida(Comida comida);
+
+bool checkForColisionBC(Bixinho b, Comida *c);
+bool checkForColisionBB(Bixinho b1, Bixinho b2);
+
 
 //------------------ Main -----------------//
 int main(int argc, char** argv){
@@ -88,7 +94,10 @@ void draw(){
   drawBixinho(wilson);
   drawBixinho(robson);
   drawBixinho(dikson);
-  drawComida(melao);
+
+  if (melao.active){
+    drawComida(melao);
+  }
 
   glutSwapBuffers();
 }
@@ -108,6 +117,12 @@ void timer(int){
   rotateBixinho(&wilson, 0.02);
   rotateBixinho(&robson, 0.04);
   rotateBixinho(&dikson, -0.02);
+
+  if (checkForColisionBC(dikson, &melao))
+  {
+      cout << "got the melao" << endl;
+  }
+  
 
   // Executa a função draw para desenhar novamente
   glutPostRedisplay();
@@ -134,6 +149,36 @@ void moveBixinho(Bixinho *bixinho, float distance){
   bixinho->x = bixinho->x>1 ? -1 : bixinho->x;
   bixinho->y = bixinho->y>1 ? -1 : bixinho->y;
 
+}
+
+bool checkIf2CirclesColide( float x1, float y1, float r1 ,
+                            float x2, float y2, float r2){
+    float diffx = (x1 - x2) * (x1 - x2);
+    float diffy = (y1 - y2) * (y1 - y2);
+    float dist =  sqrt(diffx + diffy);
+    if (dist <= (r1 + r2))
+        return true;
+    return false;
+}
+
+/*
+    verifica colisão entre o bixo b e a comida c
+*/
+
+bool checkForColisionBC(Bixinho b, Comida *c){
+
+    if (c->active && checkIf2CirclesColide(b.x,b.y,b.radius, c->x,c->y,c->radius))
+    {
+        c->active = false;
+        return true;
+    }else{
+        return false;
+    }    
+}
+
+bool checkForColisionBB(Bixinho b1, Bixinho b2){
+    return checkIf2CirclesColide(b1.x,b1.y,b1.radius, 
+                                 b2.x,b2.y,b2.radius);
 }
 
 void drawBixinho(Bixinho bixinho){
