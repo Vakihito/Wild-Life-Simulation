@@ -47,7 +47,7 @@ typedef struct _comida{
   float theta;
   float r,g,b;
 
-}comida;
+}Comida;
 
 
 // Cria os bixinhos: (radius) (x,y,theta)       (r,g,b)
@@ -55,7 +55,7 @@ Bixinho wilson =     {0.07,   0,0,0,            0.8,0,0};
 Bixinho robson =     {0.05,   -0.3,-0.3,M_PI,   0,0.8,0};
 Bixinho dikson =     {0.1,    -0.5,0,M_PI/2,    0,0,0.8};
 
-comida melao =       {0.1,    -0.5,0,M_PI/2,    0,0,0.1};
+Comida melao =       {0.02,    -0.5,0,M_PI/2,    0,0.8,0.8};
 
 
 //---------- Protótipos de função ----------//
@@ -64,6 +64,7 @@ void timer(int);// Função de loop
 void rotateBixinho(Bixinho *bixinho, float angle);// Girar bixinho
 void moveBixinho(Bixinho *bixinho, float distance);// Mover bixinho
 void drawBixinho(Bixinho bixinho);// Desenhar bixinho
+void drawComida(Comida comida);
 
 //------------------ Main -----------------//
 int main(int argc, char** argv){
@@ -87,6 +88,7 @@ void draw(){
   drawBixinho(wilson);
   drawBixinho(robson);
   drawBixinho(dikson);
+  drawComida(melao);
 
   glutSwapBuffers();
 }
@@ -170,6 +172,22 @@ void drawBixinho(Bixinho bixinho){
     float shiftY = radius/2*sin(theta+eyeDist);
 
     glVertex2d( eyeRadius*cos(i/180.0*M_PI) + x + shiftX, eyeRadius*sin(i/180.0*M_PI) + y + shiftY);
+  }
+  glEnd();
+}
+
+void drawComida(Comida comida){
+  // Função para desenhar o comida
+  float radius = comida.radius;
+  float x = comida.x;
+  float y = comida.y;
+  float theta = comida.theta;
+
+  //----- Desenha corpo do comida -----//
+  glColor3f(comida.r, comida.g, comida.b);// Bixinho verde
+  glBegin(GL_POLYGON);
+  for (int i = 0; i < 360; i+=5) {
+    glVertex2d( radius*cos(i/180.0*M_PI) + x, radius*sin(i/180.0*M_PI) + y);
   }
   glEnd();
 }
