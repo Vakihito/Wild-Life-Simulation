@@ -20,6 +20,18 @@ using namespace std;
     como compilar : g++ versao1.cpp  -lglut -lGLU -lGL && ./a.out
 */
 
+typedef struct _comida{
+  /* tamanho  */
+  float radius;
+  float x;
+  float y;
+  float theta;
+  float r,g,b;
+
+  bool active;
+
+}Comida;
+
 typedef struct _bixinho{
   /* tamanho  */
   float radius;
@@ -37,29 +49,21 @@ typedef struct _bixinho{
   float velocidade;
   /* percepção - raio em que o boneco começa a caminhar*/
   float percep;
+
+  Comida *curComida;
   
 }Bixinho;
 
-typedef struct _comida{
-  /* tamanho  */
-  float radius;
-  float x;
-  float y;
-  float theta;
-  float r,g,b;
-
-  bool active;
-
-}Comida;
 
 
-// Cria os bixinhos: (radius) (x,y,theta)       (r,g,b)   (energia ini)    pontos vel   percep
-Bixinho wilson =     {0.05,   0,0,0,            0.8,0,0   ,energiaInicial, 0     , 0    , 0.6};
-Bixinho robson =     {0.05,   -0.3,-0.3,M_PI,   0,0.8,0   ,energiaInicial, 0     , 0    , 0.6};
-Bixinho dikson =     {0.05,    -0.5,0,M_PI/2,    0,0,0.8  ,energiaInicial, 0     , 0    , 0.6};
+
+// Cria os bixinhos: (radius) (x,y,theta)       (r,g,b)   (energia ini)    pontos vel   percep  comida atual
+Bixinho wilson =     {0.05,   0,0,0,            0.8,0,0   ,energiaInicial, 0     , 0    , 0.6,  NULL};
+Bixinho robson =     {0.05,   -0.3,-0.3,M_PI,   0,0.8,0   ,energiaInicial, 0     , 0    , 0.6,  NULL};
+Bixinho dikson =     {0.05,    -0.5,0,M_PI/2,    0,0,0.8  ,energiaInicial, 0     , 0    , 0.6,  NULL};
 
 Comida *melao;
-int qMelao = 10;
+int qMelao = 50;
 
 
 //---------- Protótipos de função ----------//
@@ -198,14 +202,14 @@ float checkIfInSight(Bixinho b, Comida c){
 }
 
 /* Se a comida estiver no sight range, e caso ela esteja na ativa movemos na direção dela */
-float rotateToFood(Bixinho *b, Comida c){
+float rotateToFood(Bixinho *b, Comida *c){
 
-  float diffx =  c.x - b->x;
-  float diffy =  c.y - b->y;
+  float diffx =  c->x - b->x;
+  float diffy =  c->y - b->y;
 
   float rotation = (float)(atan2(diffy,diffx)) ;
   b->theta = rotation;
-
+  b->curComida = c;
   return rotation;
 }
 
@@ -217,6 +221,24 @@ float RandomFloat(float a, float b) {
     return a + r;
 }
 
+bool checkIfNear(Bixinho *b, Comida *c){
+  if (b->curComida == NULL)
+  {
+    return true;
+  }
+  if (!b->curComida->active)
+  {
+    b->curComida = NULL;
+    return true;
+  }
+  if (distBetweenBC(*b, *c) < distBetweenBC(*b, *(b->curComida)))
+  {
+    return true;
+  }
+
+  return false;
+}
+
 /*
   decide o tipo de movimento do bixinho
   se a comida estiver no range de visão do bixinho e estiver ativa
@@ -224,10 +246,12 @@ float RandomFloat(float a, float b) {
 */
 float decideMovement(Bixinho *b, Comida *c){
   if (checkIfInSight(*b, *c) && c->active){
+    if (checkIfNear(b, c))
+    {
+      rotateToFood(b, c);
+    }
     
-    rotateToFood(b, *c);
-
-  }else{
+  }else if(b->curComida == NULL){
     // b->theta -= 0.02;
     if (rand() % 2 == 0)
       b->theta += RandomFloat(0.01, 0.1);
@@ -246,7 +270,7 @@ bool checkForColisionBC(Bixinho *b, Comida *c){
     if (c->active && checkIf2CirclesColide(b->x,b->y,b->radius, c->x,c->y,c->radius))
     {
         c->active = false;
-        
+        b->curComida = NULL;
         b->pontos += 1;
         // c->x = RandomFloat(0.1, 1);
         // c->y = RandomFloat(0.1, 1);
