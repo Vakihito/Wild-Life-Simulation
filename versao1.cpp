@@ -258,7 +258,7 @@ float decideMovement(Bixinho *b, Comida *c){
     else
       b->theta -= RandomFloat(0.01, 0.1);
   }
-
+  /* precisa consertar essa parte, toda vez nas 100 iterações ele pode entrar qui o q gera o comportamento frenético a altas taxas de melões */
 
 }
 
