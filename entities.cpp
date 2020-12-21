@@ -1,15 +1,41 @@
 #include "entities.h"
-#include <iostream>
-#include <math.h>
-
-using namespace std;
 
 /* Gera um float randomico */
 float RandomFloat(float a, float b){
-    float random = ((float) rand()) / (float) RAND_MAX;
-    float diff = b - a;
-    float r = random * diff;
-    return a + r;
+  float random = ((float) rand()) / (float) RAND_MAX;
+  float diff = b - a;
+  float r = random * diff;
+  return a + r;
+}
+
+vector<float> calcularCor(Bixinho b){
+  vector<float> cor;
+
+  cor.push_back((b.velocidade - minVelocidade)/maxVelocidade);  // R
+  cor.push_back((b.percep - minPercep)/maxPercep);              // G
+  cor.push_back((b.radius - minRadius)/maxRadius);              // B
+
+  return cor;
+}
+
+Bixinho gerarBixinho(){
+  Bixinho novo;
+  vector<float> cor;
+
+  novo.radius = RandomFloat(minRadius, maxRadius);
+  novo.percep = RandomFloat(minPercep, maxPercep);
+  novo.velocidade = RandomFloat(minVelocidade, maxVelocidade);
+  novo.pontos = 0;
+  novo.energia = energiaInicial;
+
+  cor = calcularCor(novo);
+  novo.r = cor[0];
+  novo.g = cor[1];
+  novo.b = cor[2];
+
+  novo.curComida = NULL;
+
+  return novo;
 }
 
 void rotateBixinho(Bixinho *bixinho, float angle){
@@ -40,8 +66,7 @@ bool moveRandom(Bixinho *b){
   return true;
 }
 
-bool checkIf2CirclesColide(float x1, float y1, float r1 ,
-                           float x2, float y2, float r2){
+bool checkIf2CirclesColide(float x1, float y1, float r1, float x2, float y2, float r2){
     float diffx = (x1 - x2) * (x1 - x2);
     float diffy = (y1 - y2) * (y1 - y2);
     float dist =  sqrt(diffx + diffy);

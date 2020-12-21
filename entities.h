@@ -1,10 +1,24 @@
 #ifndef ENTITIES_H
 #define ENTITIES_H
 
+#include <iostream>
+#include <math.h>
+#include <vector>
+
+using namespace std;
+
 #define populacaoInicial 10     // número de indivíduos da geração 1
 #define diasPorGeracao 10       // quantidade de ciclos por verificação
 #define pontosPorComida 1       // quantidade de pontos obtidos para cada comida coletaa
 #define energiaInicial 100      // valor inicial de energia de um indivíduo
+
+#define minVelocidade 0.3
+#define maxVelocidade 1.0
+#define minRadius 0.03
+#define maxRadius 0.1
+#define minPercep 0.3
+#define maxPercep 1.0
+#define slowness 100
 
 typedef struct _comida {
   float radius;   // comprimento do raio (tamanho)
@@ -39,6 +53,8 @@ typedef struct _bixinho {
 //----------------------------------------------//
 
 float RandomFloat(float a, float b);
+vector<float> calcularCor(Bixinho b);
+Bixinho gerarBixinho();
 bool checkIfNear(Bixinho *b, Comida *c);
 float decideMovement(Bixinho *b, Comida *c);
 void rotateBixinho(Bixinho *bixinho, float angle);

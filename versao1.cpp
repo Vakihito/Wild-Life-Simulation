@@ -7,6 +7,7 @@
 #include "entities.h"
 #include <iostream>
 #include <math.h>
+#include <vector>
 
 using namespace std;
 
@@ -22,30 +23,38 @@ using namespace std;
     Como compilar : g++ versao1.cpp  -lglut -lGLU -lGL && ./a.out
 */
 
+vector<Bixinho> populacao;
+vector<Comida> melao;
 
 // Cria os bixinhos: (radius) (x,y,theta)       (r,g,b)   (energia ini)    pontos vel   percep  comida atual
 Bixinho wilson =     {0.05,   0,0,0,            0.8, 0,0  ,energiaInicial, 0     , 0    , 0.6,  NULL};
 Bixinho robson =     {0.05,   -0.3,-0.3,M_PI,   0,0.8,0   ,energiaInicial, 0     , 0    , 0.6,  NULL};
 Bixinho dikson =     {0.05,   -0.5,0,M_PI/2,    0,0, 0.8  ,energiaInicial, 0     , 0    , 0.6,  NULL};
 
-Comida *melao;
 int qMelao = 50;
 
 //---------- Protótipos de função ----------//
 void draw();                                          // Função para desenhar
 void timer(int);                                      // Função de loop
 void drawBixinho(Bixinho bixinho);                    // Desenhar bixinho
+void drawPopulacao(int size);                         // Desenhar população de bixinhos
 void drawComida(Comida comida);                       // Desenhar comida
 float RandomFloat(float a, float b);                  // Gerar float aleatorio
 
 //------------------ Main -----------------//
 int main(int argc, char** argv){
 
-  melao = (Comida *)malloc(qMelao * sizeof(Comida));
+  //inicializa população
+  for(int i = 0; i < populacaoInicial; ++i) {
+    populacao.push_back(gerarBixinho());
+    populacao[i].theta = (360*i)/populacaoInicial;
+    populacao[i].x = 1*cos(populacao[i].theta);
+    populacao[i].y = 1*sin(populacao[i].theta);
+  }
 
   // inicializa as comidas
-  for (int i = 0; i < qMelao; i++) {
-    melao[i] = {0.02, RandomFloat(-1,1), RandomFloat(-1,1),0, 0, 0.8, 0.8, true};
+  for(int i = 0; i < qMelao; i++) {
+    melao.push_back({0.02, RandomFloat(-1,1), RandomFloat(-1,1),0, 0, 0.8, 0.8, true});
   }
 
   glutInit(&argc, argv);
@@ -64,10 +73,7 @@ int main(int argc, char** argv){
 //------------------ Draw -----------------//
 void draw() {
   glClear(GL_COLOR_BUFFER_BIT);
-
-  drawBixinho(wilson);
-  drawBixinho(robson);
-  drawBixinho(dikson);
+  drawPopulacao(populacao.size());
 
   for (int i = 0; i < qMelao; i++) {
     if(melao[i].active){
@@ -81,26 +87,22 @@ void draw() {
 //------------------ Timer -----------------//
 void timer(int){
   // Essa função é chamada em loop, é aqui que realizaremos as animações
+  int size = populacao.size();
 
   // Para mover os bixinhos
-  moveBixinho(&wilson, 0.005);
-  moveBixinho(&robson, 0.003);
-  moveBixinho(&dikson, 0.007);
+  for(int j = 0; j < size; j++)
+    moveBixinho(&populacao[j], populacao[j].velocidade/slowness);
 
   // Para girar os bixinhos
   for(int i = 0; i < qMelao; i++) {
-    decideMovement(&wilson, &melao[i]);
-    decideMovement(&robson, &melao[i]);
-    decideMovement(&dikson, &melao[i]);
-
-    checkForColisionBC(&wilson, &melao[i]);
-    checkForColisionBC(&robson, &melao[i]);
-    checkForColisionBC(&dikson, &melao[i]);
+    for(int j = 0; j < size; j++) {
+      decideMovement(&populacao[j], &melao[i]);
+      checkForColisionBC(&populacao[j], &melao[i]);
+    }
   }
 
-  moveRandom(&wilson);
-  moveRandom(&robson);
-  moveRandom(&dikson);
+  for(int j = 0; j < size; j++)
+    moveRandom(&populacao[j]);
 
   // Executa a função draw para desenhar novamente
   glutPostRedisplay();
@@ -153,6 +155,12 @@ void drawBixinho(Bixinho bixinho){
     glVertex2d( eyeRadius*cos(i/180.0*M_PI) + x + shiftX, eyeRadius*sin(i/180.0*M_PI) + y + shiftY);
   }
   glEnd();
+}
+
+void drawPopulacao(int size){
+  for(int i = 0; i < size; ++i)
+    drawBixinho(populacao[i]);
+  return;
 }
 
 void drawComida(Comida comida){
