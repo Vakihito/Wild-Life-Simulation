@@ -78,6 +78,7 @@ float decideMovement(Bixinho *b, Comida *c);
 bool checkForColisionBC(Bixinho *b, Comida *c);
 bool checkForColisionBB(Bixinho b1, Bixinho b2);
 float RandomFloat(float a, float b);
+bool moveRandom(Bixinho *b);
 
  
 //------------------ Main -----------------//
@@ -147,6 +148,9 @@ void timer(int){
     checkForColisionBC(&dikson, &melao[i]);
   }
   
+  moveRandom(&wilson);
+  moveRandom(&robson);
+  moveRandom(&dikson);
 
 
   // Executa a função draw para desenhar novamente
@@ -251,15 +255,19 @@ float decideMovement(Bixinho *b, Comida *c){
       rotateToFood(b, c);
     }
     
-  }else if(b->curComida == NULL){
+  }
+  /* precisa consertar essa parte, toda vez nas 100 iterações ele pode entrar qui o q gera o comportamento frenético a altas taxas de melões */
+
+}
+/* se o bixinho não tiver correndo atrás de comida faz ele andar de forma aleatoria */
+bool moveRandom(Bixinho *b){
+  if(b->curComida == NULL){
     // b->theta -= 0.02;
     if (rand() % 2 == 0)
       b->theta += RandomFloat(0.01, 0.1);
     else
       b->theta -= RandomFloat(0.01, 0.1);
   }
-  /* precisa consertar essa parte, toda vez nas 100 iterações ele pode entrar qui o q gera o comportamento frenético a altas taxas de melões */
-
 }
 
 /*
