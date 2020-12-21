@@ -25,11 +25,8 @@ using namespace std;
 
 vector<Bixinho> populacao;
 vector<Comida> melao;
-
-// Cria os bixinhos: (radius) (x,y,theta)       (r,g,b)   (energia ini)    pontos vel   percep  comida atual
-Bixinho wilson =     {0.05,   0,0,0,            0.8, 0,0  ,energiaInicial, 0     , 0    , 0.6,  NULL};
-Bixinho robson =     {0.05,   -0.3,-0.3,M_PI,   0,0.8,0   ,energiaInicial, 0     , 0    , 0.6,  NULL};
-Bixinho dikson =     {0.05,   -0.5,0,M_PI/2,    0,0, 0.8  ,energiaInicial, 0     , 0    , 0.6,  NULL};
+int dia;
+int geracao;
 
 int qMelao = 50;
 
@@ -40,17 +37,18 @@ void drawBixinho(Bixinho bixinho);                    // Desenhar bixinho
 void drawPopulacao(int size);                         // Desenhar população de bixinhos
 void drawComida(Comida comida);                       // Desenhar comida
 float RandomFloat(float a, float b);                  // Gerar float aleatorio
+void inicializarPosicaoPopulacao();
+void inicializarPosicaoComida();
 
 //------------------ Main -----------------//
 int main(int argc, char** argv){
+  dia = 1;
+  geracao = 1;
 
   //inicializa população
-  for(int i = 0; i < populacaoInicial; ++i) {
+  for(int i = 0; i < populacaoInicial; ++i) 
     populacao.push_back(gerarBixinho());
-    populacao[i].theta = (360*i)/populacaoInicial;
-    populacao[i].x = 1*cos(populacao[i].theta);
-    populacao[i].y = 1*sin(populacao[i].theta);
-  }
+  inicializarPosicaoPopulacao();
 
   // inicializa as comidas
   for(int i = 0; i < qMelao; i++) {
@@ -88,10 +86,11 @@ void draw() {
 void timer(int){
   // Essa função é chamada em loop, é aqui que realizaremos as animações
   int size = populacao.size();
+  bool melaoAtivo = false;
 
   // Para mover os bixinhos
-  for(int j = 0; j < size; j++)
-    moveBixinho(&populacao[j], populacao[j].velocidade/slowness);
+  for(int i = 0; i < size; i++)
+    moveBixinho(&populacao[i], populacao[i].velocidade/slowness);
 
   // Para girar os bixinhos
   for(int i = 0; i < qMelao; i++) {
@@ -101,8 +100,27 @@ void timer(int){
     }
   }
 
-  for(int j = 0; j < size; j++)
-    moveRandom(&populacao[j]);
+  for(int i = 0; i < size; i++)
+    moveRandom(&populacao[i]);
+
+  for(int i = 0; i < qMelao; i++){
+    if(melao[i].active){
+      melaoAtivo = true;
+      break;
+    }
+  }
+
+  if(!melaoAtivo){
+    dia++;
+    if(dia == diasPorGeracao){
+      dia = 1;
+      //TODO: APLICAR METODOS DE SELECAO E REPRODUCAO
+      geracao++;
+    }
+    inicializarPosicaoPopulacao();
+    inicializarPosicaoComida();
+  }
+      
 
   // Executa a função draw para desenhar novamente
   glutPostRedisplay();
@@ -171,10 +189,26 @@ void drawComida(Comida comida){
   float theta = comida.theta;
 
   //----- Desenha corpo do comida -----//
-  glColor3f(comida.r, comida.g, comida.b);// Bixinho verde
+  glColor3f(comida.r, comida.g, comida.b);
   glBegin(GL_POLYGON);
   for (int i = 0; i < 360; i += 5) {
     glVertex2d( radius*cos(i/180.0*M_PI) + x, radius*sin(i/180.0*M_PI) + y);
   }
   glEnd();
+}
+
+void inicializarPosicaoPopulacao() {
+   for(int i = 0; i < populacao.size(); ++i) {
+    populacao[i].theta = (360*i)/populacaoInicial;
+    populacao[i].x = 1*cos(populacao[i].theta);
+    populacao[i].y = 1*sin(populacao[i].theta);
+  }
+  return;
+}
+
+void inicializarPosicaoComida() {
+  for(int i = 0; i < qMelao; i++) {
+    melao[i] = {0.02, RandomFloat(-1,1), RandomFloat(-1,1),0, 0, 0.8, 0.8, true};
+  }
+  return;
 }
