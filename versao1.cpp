@@ -22,7 +22,7 @@ using namespace std;
     guardam comida. O que tiver mais comida é escolhido como elite. 
     Dessa forma, ao final do processo, podemos fazer toneio de 2 ou elitismo.
 
-    Como compilar : g++ versao1.cpp  -lglut -lGLU -lGL && ./a.out
+    Como compilar : g++ -c entities.cpp && g++ -c util.cpp && g++ entities.o util.o versao1.cpp -lglut -lGLU -lGL && ./a.out
 */
 
 vector<Bixinho> populacao;
@@ -31,6 +31,7 @@ int dia;
 int geracao;
 
 int qMelao = 50;
+clock_t curTime = clock();
 
 //---------- Protótipos de função ----------//
 void draw();                                          // Função para desenhar
@@ -113,10 +114,17 @@ void timer(int){
       break;
     }
   }
+  if (clock() - curTime > timeEnergyCheck){
+    curTime = clock(); 
+    subtractEnergy(populacao);
+  }
+
+  
 
   if(!melaoAtivo){
     dia++;
     if(dia == diasPorGeracao){
+      curTime = clock();
       dia = 1;
       print_text("Geração " + to_string(geracao), "green", true);
 
@@ -127,6 +135,8 @@ void timer(int){
       print_text(to_string(populacao[best_index].pontos), "white", true);
       print_text("Fitness Médio: ", "yellow", false);
       print_text(to_string(avg_fitness), "white", true);
+      print_text("Tamanho da populacao: ", "yellow", false);
+      print_text(to_string(populacao.size()), "white", true);
 
       elitism(populacao, best_index);
       geracao++;

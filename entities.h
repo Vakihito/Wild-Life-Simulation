@@ -11,8 +11,11 @@ using namespace std;
 #define populacaoInicial 10     // número de indivíduos da geração 1
 #define diasPorGeracao 10       // quantidade de ciclos por verificação
 #define pontosPorComida 1       // quantidade de pontos obtidos para cada comida coletaa
-#define energiaInicial 100      // valor inicial de energia de um indivíduo
+#define energiaInicial 10      // valor inicial de energia de um indivíduo
 #define mutacaoBase 0.02        // taxa de mutação de referência
+#define energyCostBias 5       // numero multiplicado pelo formula de energia 
+#define timeEnergyCheck 1    // define o tempo em que atualizamos a energia 
+#define enegyAgain 5            // energia ganha ao comer
 
 #define minVelocidade 0.3
 #define maxVelocidade 1.0
@@ -20,7 +23,7 @@ using namespace std;
 #define maxRadius 0.1
 #define minPercep 0.3
 #define maxPercep 1.0
-#define slowness 10
+#define slowness 100
 
 typedef struct _comida {
   float radius;   // comprimento do raio (tamanho)
@@ -62,6 +65,7 @@ float decideMovement(Bixinho *b, Comida *c);
 void rotateBixinho(Bixinho *bixinho, float angle);
 void moveBixinho(Bixinho *bixinho, float distance);
 bool moveRandom(Bixinho *b);
+void subtractEnergy(vector<Bixinho> &populacao);
 bool checkIf2CirclesColide(float x1, float y1, float r1, float x2, float y2, float r2);
 bool checkForColisionBC(Bixinho *b, Comida *c);
 bool checkForColisionBB(Bixinho b1, Bixinho b2);

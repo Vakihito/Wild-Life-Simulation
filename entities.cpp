@@ -66,6 +66,28 @@ bool moveRandom(Bixinho *b){
   return true;
 }
 
+void killBixinho(vector<Bixinho> &populacao, int idx){
+  populacao.erase(populacao.begin() + idx);
+}
+
+float energyCost(Bixinho b){
+  return ((b.radius * b.velocidade * b.velocidade)/2);   
+}
+
+void subtractEnergy(vector<Bixinho> &populacao){
+  for (int i = 0; i < int(populacao.size()) ; i++)
+  {
+    populacao[i].energia = populacao[i].energia -(energyCost(populacao[i]) * energyCostBias);
+    if (populacao[i].energia <= 0)
+    {
+      killBixinho(populacao, i);
+      i--;
+    }
+    
+  }
+}
+
+
 bool checkIf2CirclesColide(float x1, float y1, float r1, float x2, float y2, float r2){
     float diffx = (x1 - x2) * (x1 - x2);
     float diffy = (y1 - y2) * (y1 - y2);
@@ -83,6 +105,7 @@ bool checkForColisionBC(Bixinho *b, Comida *c){
         c->active = false;
         b->curComida = NULL;
         b->pontos += 1;
+        b->energia += enegyAgain;
         // c->x = RandomFloat(0.1, 1);
         // c->y = RandomFloat(0.1, 1);
         return true;
