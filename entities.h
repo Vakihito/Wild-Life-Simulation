@@ -4,6 +4,7 @@
 #include <iostream>
 #include <math.h>
 #include <vector>
+#include <time.h>
 
 using namespace std;
 
@@ -11,6 +12,7 @@ using namespace std;
 #define diasPorGeracao 10       // quantidade de ciclos por verificação
 #define pontosPorComida 1       // quantidade de pontos obtidos para cada comida coletaa
 #define energiaInicial 100      // valor inicial de energia de um indivíduo
+#define mutacaoBase 0.02        // taxa de mutação de referência
 
 #define minVelocidade 0.3
 #define maxVelocidade 1.0
@@ -18,7 +20,7 @@ using namespace std;
 #define maxRadius 0.1
 #define minPercep 0.3
 #define maxPercep 1.0
-#define slowness 100
+#define slowness 10
 
 typedef struct _comida {
   float radius;   // comprimento do raio (tamanho)
@@ -66,5 +68,9 @@ bool checkForColisionBB(Bixinho b1, Bixinho b2);
 float distBetweenBC(Bixinho b, Comida c);                                               
 float checkIfInSight(Bixinho b, Comida c);
 float rotateToFood(Bixinho *b, Comida *c);
+int chooseBest(vector<Bixinho> population);
+float averageFitness(vector<Bixinho> population);
+float mutation(float min, float max, float taxaMutacao);
+void elitism(vector<Bixinho> &pop, int best);
 
 #endif

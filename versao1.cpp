@@ -5,9 +5,11 @@
 #endif
 
 #include "entities.h"
+#include "util.h"
 #include <iostream>
 #include <math.h>
 #include <vector>
+#include <time.h>
 
 using namespace std;
 
@@ -37,18 +39,20 @@ void drawBixinho(Bixinho bixinho);                    // Desenhar bixinho
 void drawPopulacao(int size);                         // Desenhar população de bixinhos
 void drawComida(Comida comida);                       // Desenhar comida
 float RandomFloat(float a, float b);                  // Gerar float aleatorio
-void inicializarPosicaoPopulacao();
+void inicializarPopulacao();
 void inicializarPosicaoComida();
 
 //------------------ Main -----------------//
 int main(int argc, char** argv){
+  srand(time(NULL));
+
   dia = 1;
   geracao = 1;
 
   //inicializa população
   for(int i = 0; i < populacaoInicial; ++i) 
     populacao.push_back(gerarBixinho());
-  inicializarPosicaoPopulacao();
+  inicializarPopulacao();
 
   // inicializa as comidas
   for(int i = 0; i < qMelao; i++) {
@@ -114,10 +118,20 @@ void timer(int){
     dia++;
     if(dia == diasPorGeracao){
       dia = 1;
-      //TODO: APLICAR METODOS DE SELECAO E REPRODUCAO
+      print_text("Geração " + to_string(geracao), "green", true);
+
+      int best_index = chooseBest(populacao);
+      float avg_fitness = averageFitness(populacao);
+
+      print_text("Melhor Fitness: ", "yellow", false);
+      print_text(to_string(populacao[best_index].pontos), "white", true);
+      print_text("Fitness Médio: ", "yellow", false);
+      print_text(to_string(avg_fitness), "white", true);
+
+      elitism(populacao, best_index);
       geracao++;
     }
-    inicializarPosicaoPopulacao();
+    inicializarPopulacao();
     inicializarPosicaoComida();
   }
       
@@ -129,7 +143,6 @@ void timer(int){
   // Eu coloquei 1000/60 para definir que vai atualizar a 60hz
   glutTimerFunc(1000/60, timer, 0);// Garante que esta função será chamada de novo
 }
-
 
 //----------------------------------------------//
 //----------- Funções para o bixinho -----------//
@@ -197,11 +210,13 @@ void drawComida(Comida comida){
   glEnd();
 }
 
-void inicializarPosicaoPopulacao() {
-   for(int i = 0; i < populacao.size(); ++i) {
+void inicializarPopulacao() {
+  int r = 1;
+  for(int i = 0; i < populacao.size(); ++i) {
+    populacao[i].pontos = 0;
     populacao[i].theta = (360*i)/populacaoInicial;
-    populacao[i].x = 1*cos(populacao[i].theta);
-    populacao[i].y = 1*sin(populacao[i].theta);
+    populacao[i].x = r*cos(populacao[i].theta);
+    populacao[i].y = r*sin(populacao[i].theta);
   }
   return;
 }

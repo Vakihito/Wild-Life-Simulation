@@ -145,3 +145,108 @@ float decideMovement(Bixinho *b, Comida *c){
   /* precisa consertar essa parte, toda vez nas 100 iterações ele pode entrar qui o q gera o comportamento frenético a altas taxas de melões */
   return 0;
 }
+
+int chooseBest(vector<Bixinho> population){
+    pair<int,int> current;
+    pair<int,int> best = {0, population[0].pontos};
+    int size = population.size();
+
+    for(int i = 1; i < size; ++i){
+        current.first = i;
+        current.second = population[i].pontos;
+
+        if(current.second > best.second){
+            best.first = current.first;
+            best.second = current.second;
+        }
+    }
+
+    return best.first;
+}
+
+float averageFitness(vector<Bixinho> population){
+  float avg = 0;
+  int size = population.size();
+
+  for(int i = 0; i < size; ++i)
+    avg += population[i].pontos;
+  
+  avg /= size;
+  return avg;
+}
+
+float mutation(float min, float max, float taxaMutacao) {
+  float var = (min + max)/2.0;
+  return ((RandomFloat(0, var)) - var/2) * taxaMutacao;
+}
+
+void elitism(vector<Bixinho> &pop, int best){
+    vector<Bixinho> next_gen;
+    Bixinho cur;
+    vector<float> cur_color; 
+    int size = pop.size();
+
+    // produz novos indivíduos
+    next_gen.push_back(pop[best]);
+    for(int i = 0; i < size; ++i){
+      if(i != best){
+        cur.curComida = NULL;
+        cur.pontos = 0;
+        cur.energia = energiaInicial;
+
+        cur.radius = (pop[best].radius + pop[i].radius)/2.0 + mutation(minRadius, maxRadius, mutacaoBase);
+        cur.percep = (pop[best].percep + pop[i].percep)/2.0 + mutation(minPercep, maxPercep, mutacaoBase);
+        cur.velocidade = (pop[best].velocidade + pop[i].velocidade)/2.0 + mutation(minVelocidade, maxVelocidade, mutacaoBase);
+
+        if(cur.radius < minRadius) cur.radius = minRadius;
+        if(cur.percep < minPercep) cur.percep = minPercep;
+        if(cur.velocidade < minVelocidade) cur.velocidade = minVelocidade;
+
+        if(cur.radius > maxRadius) cur.radius = maxRadius;
+        if(cur.percep > maxPercep) cur.percep = maxPercep;
+        if(cur.velocidade > maxVelocidade) cur.velocidade = maxVelocidade;
+
+        cur_color = calcularCor(cur);
+        cur.r = cur_color[0];
+        cur.g = cur_color[1];
+        cur.b = cur_color[2];
+
+        next_gen.push_back(cur);
+      }
+    } 
+    //i != best ? next_gen.push_back(((pop[i]+pop[best])/2.0) + ((rand()%VAR)-VAR/2)*MUTATION) : next_gen.push_back(pop[i]);
+
+    // substitui a população atual pela nova
+    pop = next_gen;
+
+    return;
+}
+
+// void tournament_2(vector<double> &pop, int best) {
+//     vector<double> next_gen;
+//     next_gen.push_back(pop[best]);
+
+//     int father;                 // índice do pai
+//     int mother;                 // índice da mãe
+//     pair<int,int> duel;         // índice dos indivíduos que participarão do torneio
+
+//     // produz novos indivíduos
+//     for(int i = 1; i < SIZE; ++i) {
+//         // seleciona pai
+//         duel.first = rand() % SIZE;
+//         duel.second = rand() % SIZE;
+//         father = f(pop[duel.first]) > f(pop[duel.second]) ? duel.first : duel.second;
+
+//         // seleciona mãe
+//         duel.first = rand() % SIZE;
+//         duel.second = rand() % SIZE;
+//         mother = f(pop[duel.first]) > f(pop[duel.second]) ? duel.first : duel.second;
+
+//         next_gen.push_back(((pop[father]+pop[mother])/2.0) + ((rand()%VAR)-VAR/2)*MUTATION);
+//     }
+
+//     // substitui a população atual pela nova
+//     for(int i = 0; i < SIZE; ++i) pop[i] = next_gen[i];
+
+//     return;
+// }
