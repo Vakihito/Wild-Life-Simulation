@@ -22,7 +22,10 @@ using namespace std;
     guardam comida. O que tiver mais comida é escolhido como elite. 
     Dessa forma, ao final do processo, podemos fazer toneio de 2 ou elitismo.
 
-    Como compilar : g++ versao1.cpp  -lglut -lGLU -lGL && ./a.out
+    Como compilar : 
+    g++ -c utils.cpp
+    g++ -c entities.cpp
+    g++ entities.o util.o versao1.cpp -lglut -lGLU -lGL && ./a.out
 */
 
 vector<Bixinho> populacao;

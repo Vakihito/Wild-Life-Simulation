@@ -1,6 +1,5 @@
 #include "entities.h"
 
-/* Gera um float randomico */
 float RandomFloat(float a, float b){
   float random = ((float) rand()) / (float) RAND_MAX;
   float diff = b - a;
@@ -48,22 +47,20 @@ void moveBixinho(Bixinho *bixinho, float distance){
   bixinho->y = bixinho->y + distance*sin(bixinho->theta);
 
   // Impede que o bixinho saia da tela
-  bixinho->x = bixinho->x>1 ? -1 : bixinho->x;
-  bixinho->x = bixinho->x<-1 ? 1 : bixinho->x;
+  bixinho->x = bixinho->x > 1 ? -1 : bixinho->x;
+  bixinho->x = bixinho->x < -1 ? 1 : bixinho->x;
 
-  bixinho->y = bixinho->y>1 ? -1 : bixinho->y;
-  bixinho->y = bixinho->y<-1 ? 1 : bixinho->y;
+  bixinho->y = bixinho->y > 1 ? -1 : bixinho->y;
+  bixinho->y = bixinho->y < -1 ? 1 : bixinho->y;
 }
 
 bool moveRandom(Bixinho *b){
   if(b->curComida == NULL){
-    // b->theta -= 0.02;
-    if(rand() % 2 == 0)
-      b->theta += RandomFloat(0.01, 0.1);
-    else
-      b->theta -= RandomFloat(0.01, 0.1);
+    if(rand() % 2 == 0) b->theta += RandomFloat(0.01, 0.1);
+    else b->theta -= RandomFloat(0.01, 0.1);
+    return true;
   }
-  return true;
+  return false;
 }
 
 bool checkIf2CirclesColide(float x1, float y1, float r1, float x2, float y2, float r2){
@@ -131,18 +128,12 @@ bool checkIfNear(Bixinho *b, Comida *c){
   return false;
 }
 
-/*
-  Decide o tipo de movimento do bixinho
-  Se a comida estiver no range de visão do bixinho e estiver ativa,
-  o bixinho é rotationado na direção da comida.
-*/
 float decideMovement(Bixinho *b, Comida *c){
   if(checkIfInSight(*b, *c) && c->active){
     if(checkIfNear(b, c)){
       rotateToFood(b, c);
     } 
   }
-  /* precisa consertar essa parte, toda vez nas 100 iterações ele pode entrar qui o q gera o comportamento frenético a altas taxas de melões */
   return 0;
 }
 
