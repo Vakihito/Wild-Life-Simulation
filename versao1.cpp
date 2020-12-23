@@ -205,8 +205,11 @@ void drawBixinho(Bixinho bixinho, int idx){
 }
 
 void drawPopulacao(int size){
-  for(int i = 0; i < size; ++i)
-    drawBixinho(populacao[i], i);
+  for(int i = 0; i < size; ++i){
+    if (populacao[i].active){
+      drawBixinho(populacao[i], i);
+    }
+  }
   return;
 }
 
@@ -229,6 +232,7 @@ void drawComida(Comida comida){
 void inicializarPopulacao() {
   int r = 1;
   for(int i = 0; i < populacao.size(); ++i) {
+    populacao[i].active = true;
     populacao[i].pontos = 0;
     populacao[i].theta = (360*i)/populacaoInicial;
     populacao[i].x = r*cos(populacao[i].theta);

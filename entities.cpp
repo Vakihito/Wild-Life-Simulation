@@ -77,8 +77,7 @@ void subtractEnergy(vector<Bixinho> &populacao){
     populacao[i].energia = populacao[i].energia -(energyCost(populacao[i]) * energyCostBias);
     if (populacao[i].energia <= 0)
     {
-      killBixinho(populacao, i);
-      i--;
+      populacao[i].active = false;
     }
     
   }
@@ -98,7 +97,7 @@ bool checkIf2CirclesColide(float x1, float y1, float r1, float x2, float y2, flo
     Verifica colisão entre o bixo b e a comida c
 */
 bool checkForColisionBC(Bixinho *b, Comida *c){
-    if(c->active && checkIf2CirclesColide(b->x,b->y,b->radius, c->x,c->y,c->radius)){
+    if(b->active && c->active && checkIf2CirclesColide(b->x,b->y,b->radius, c->x,c->y,c->radius)){
         c->active = false;
         b->curComida = NULL;
         b->pontos += 1;
@@ -107,8 +106,8 @@ bool checkForColisionBC(Bixinho *b, Comida *c){
         // c->y = RandomFloat(0.1, 1);
         return true;
     }
-
-    else return false;
+    
+    return false;
 }
 
 bool checkForColisionBB(Bixinho b1, Bixinho b2){

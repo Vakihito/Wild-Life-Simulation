@@ -48,6 +48,8 @@ typedef struct _bixinho {
   float velocidade;   // velocidade que o animal se move 
   float percep;       // raio de percepcao em que o boneco começa a caminhar
 
+  bool active;         // define se o bixinho está ativo ou não 
+
   Comida *curComida;  // comida para a qual o bixinho está se dirigindo  
   
 }Bixinho;
