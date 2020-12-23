@@ -264,13 +264,14 @@ void elitism(vector<Bixinho> &pop, int best){
 //     return;
 // }
 
-void writeBixinhoData(string filename, string mode, Bixinho B){
+void writeBixinhoData(string filename, string mode, Bixinho B, int geracao){
   FILE *f;
   const char *auxFile = filename.c_str();
   const char *auxMode = mode.c_str();
   f = fopen(auxFile, auxMode);
   if (f != NULL)
   {
+    fputs((to_string(geracao) + ",").c_str(),f);
     fputs((to_string(B.radius) + ",").c_str(),f);
     fputs((to_string(B.energia) + ",").c_str(),f);
     fputs((to_string(B.pontos) + ",").c_str(),f);

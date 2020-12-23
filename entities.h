@@ -120,6 +120,6 @@ int chooseBest(vector<Bixinho> population);
 float averageFitness(vector<Bixinho> population);
 float mutation(float min, float max, float taxaMutacao);
 void elitism(vector<Bixinho> &pop, int best);
-void writeBixinhoData(string filename, string mode, Bixinho B);
+void writeBixinhoData(string filename, string mode, Bixinho B, int geracao);
 
 #endif
