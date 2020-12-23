@@ -23,7 +23,7 @@ using namespace std;
 #define maxRadius 0.1
 #define minPercep 0.3
 #define maxPercep 1.0
-#define slowness 100
+#define slowness 10
 
 typedef struct _comida {
   float radius;   // comprimento do raio (tamanho)

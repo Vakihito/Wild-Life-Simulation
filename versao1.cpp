@@ -27,10 +27,10 @@ using namespace std;
 
 vector<Bixinho> populacao;
 vector<Comida> melao;
-int dia;
-int geracao;
-
-int qMelao = 50;
+int dia;                // numero do dia
+int geracao;            // numero da geracao
+int best_index;         // index do melhor bixinho
+int qMelao = 50;        // quantidade de comida
 clock_t curTime = clock();
 
 //---------- Protótipos de função ----------//
@@ -129,7 +129,7 @@ void timer(int){
       dia = 1;
       print_text("Geração " + to_string(geracao), "green", true);
 
-      int best_index = chooseBest(populacao);
+      best_index = chooseBest(populacao);
       float avg_fitness = averageFitness(populacao);
 
       print_text("Melhor Fitness: ", "yellow", false);
