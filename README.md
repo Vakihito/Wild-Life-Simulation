@@ -10,5 +10,5 @@ Para se executar o executável criado: <code>make run</code>
 Ou simplesmente execute: <code>make runA</code>
 
 <p align="center">
-<img src="https://github.com/Vakihito/Wild-Life-Simulation/blob/main/wild.gif" width="900"/>
+<img src="https://github.com/Vakihito/Wild-Life-Simulation/blob/main/wild.gif" width="600"/>
 </p>
