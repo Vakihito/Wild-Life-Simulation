@@ -104,16 +104,17 @@ void timer(int){
       checkForColisionBC(&populacao[j], &melao[i]);
     }
   }
-
+  // Para mover os bixinhos aleatorimamente caso eles nao tenham uma comida em mente
   for(int i = 0; i < size; i++)
     moveRandom(&populacao[i]);
-
+  // verifica se ainda há algum melão
   for(int i = 0; i < qMelao; i++){
     if(melao[i].active){
       melaoAtivo = true;
       break;
     }
   }
+  // de tempos em tempo precisamos retirar uma quantidade x de energia
   if (clock() - curTime > timeEnergyCheck){
     curTime = clock(); 
     subtractEnergy(populacao);
