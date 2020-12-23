@@ -8,3 +8,7 @@ Para compilar deve-se compilar o código : <code>make</code>
 Para se executar o executável criado: <code>make run</code>
 
 Ou simplesmente execute: <code>make runA</code>
+
+<p align="center">
+<img src="https://github.com/Vakihito/SentimentYoutube/blob/main/darkLogo.png?raw=true" width="100"/>
+</p>
