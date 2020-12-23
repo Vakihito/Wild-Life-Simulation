@@ -120,8 +120,8 @@ void timer(int){
     subtractEnergy(populacao);
   }
 
-  
 
+  best_index = chooseBest(populacao);
   if(!melaoAtivo){
     dia++;
     if(dia == diasPorGeracao){
@@ -129,7 +129,7 @@ void timer(int){
       dia = 1;
       print_text("Geração " + to_string(geracao), "green", true);
 
-      best_index = chooseBest(populacao);
+      
       float avg_fitness = averageFitness(populacao);
 
       print_text("Melhor Fitness: ", "yellow", false);
@@ -159,7 +159,7 @@ void timer(int){
 //----------- Funções para o bixinho -----------//
 //----------------------------------------------//
 
-void drawBixinho(Bixinho bixinho){
+void drawBixinho(Bixinho bixinho, int idx){
   // Função para desenhar o bixinho
   float radius = bixinho.radius;
   float x = bixinho.x;
@@ -177,8 +177,10 @@ void drawBixinho(Bixinho bixinho){
   //----- Desenha olho direito do bixinho -----//
   float eyeRadius = radius/8;
   float eyeDist = M_PI/6;
-
-  glColor3f(0, 0, 0);
+  if(idx == best_index)
+    glColor3f(0.6, 0.6, 1.0);
+  else
+    glColor3f(0, 0, 0);
   glBegin(GL_POLYGON);
   for(int i = 0; i < 360; i += 5){
     float shiftX = radius/2*cos(theta-eyeDist);
@@ -188,7 +190,10 @@ void drawBixinho(Bixinho bixinho){
   glEnd();
 
   //----- Desenha olho esquerdo do bixinho -----//
-  glColor3f(0, 0, 0);
+  if(idx == best_index)
+    glColor3f(0.6, 0.6, 1.0);
+  else
+    glColor3f(0, 0, 0);
   glBegin(GL_POLYGON);
   for(int i = 0; i < 360; i += 5){
     float shiftX = radius/2*cos(theta+eyeDist);
@@ -201,7 +206,7 @@ void drawBixinho(Bixinho bixinho){
 
 void drawPopulacao(int size){
   for(int i = 0; i < size; ++i)
-    drawBixinho(populacao[i]);
+    drawBixinho(populacao[i], i);
   return;
 }
 
