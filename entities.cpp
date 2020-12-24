@@ -83,7 +83,6 @@ void subtractEnergy(vector<Bixinho> &populacao){
   }
 }
 
-
 bool checkIf2CirclesColide(float x1, float y1, float r1, float x2, float y2, float r2){
     float diffx = (x1 - x2) * (x1 - x2);
     float diffy = (y1 - y2) * (y1 - y2);
@@ -93,9 +92,6 @@ bool checkIf2CirclesColide(float x1, float y1, float r1, float x2, float y2, flo
     return false;
 }
 
-/*
-    Verifica colisão entre o bixo b e a comida c
-*/
 bool checkForColisionBC(Bixinho *b, Comida *c){
     if(b->active && c->active && checkIf2CirclesColide(b->x,b->y,b->radius, c->x,c->y,c->radius)){
         c->active = false;
@@ -124,7 +120,6 @@ float checkIfInSight(Bixinho b, Comida c){
   return b.percep > distBetweenBC(b, c);
 }
 
-/* Se a comida estiver no sight range, e caso ela esteja na ativa movemos na direção dela */
 float rotateToFood(Bixinho *b, Comida *c){
   float diffx =  c->x - b->x;
   float diffy =  c->y - b->y;
@@ -193,41 +188,53 @@ float mutation(float min, float max, float taxaMutacao) {
   return ((RandomFloat(0, var)) - var/2) * taxaMutacao;
 }
 
+void checkChromosomes(Bixinho *b){
+  if(b->radius < minRadius) b->radius = minRadius;
+  if(b->percep < minPercep) b->percep = minPercep;
+  if(b->velocidade < minVelocidade) b->velocidade = minVelocidade;
+
+  if(b->radius > maxRadius) b->radius = maxRadius;
+  if(b->percep > maxPercep) b->percep = maxPercep;
+  if(b->velocidade > maxVelocidade) b->velocidade = maxVelocidade;
+
+  return;
+}
+
+Bixinho crossover(Bixinho b1, Bixinho b2, float taxaMutacao){
+  Bixinho b;
+  vector<float> color;
+
+  b.curComida = NULL;
+  b.pontos = 0;
+  b.energia = energiaInicial;
+
+  b.radius = (b1.radius + b2.radius)/2.0 + mutation(minRadius, maxRadius, taxaMutacao);
+  b.percep = (b1.percep + b2.percep)/2.0 + mutation(minPercep, maxPercep, taxaMutacao);
+  b.velocidade = (b1.velocidade + b2.velocidade)/2.0 + mutation(minVelocidade, maxVelocidade, taxaMutacao);
+
+  checkChromosomes(&b);
+
+  color = calcularCor(b);
+  b.r = color[0];
+  b.g = color[1];
+  b.b = color[2];
+
+  return b;
+}
+
 void elitism(vector<Bixinho> &pop, int best){
     vector<Bixinho> next_gen;
-    Bixinho cur;
-    vector<float> cur_color; 
+    Bixinho cur; 
     int size = pop.size();
 
     // produz novos indivíduos
     next_gen.push_back(pop[best]);
     for(int i = 0; i < size; ++i){
       if(i != best){
-        cur.curComida = NULL;
-        cur.pontos = 0;
-        cur.energia = energiaInicial;
-
-        cur.radius = (pop[best].radius + pop[i].radius)/2.0 + mutation(minRadius, maxRadius, mutacaoBase);
-        cur.percep = (pop[best].percep + pop[i].percep)/2.0 + mutation(minPercep, maxPercep, mutacaoBase);
-        cur.velocidade = (pop[best].velocidade + pop[i].velocidade)/2.0 + mutation(minVelocidade, maxVelocidade, mutacaoBase);
-
-        if(cur.radius < minRadius) cur.radius = minRadius;
-        if(cur.percep < minPercep) cur.percep = minPercep;
-        if(cur.velocidade < minVelocidade) cur.velocidade = minVelocidade;
-
-        if(cur.radius > maxRadius) cur.radius = maxRadius;
-        if(cur.percep > maxPercep) cur.percep = maxPercep;
-        if(cur.velocidade > maxVelocidade) cur.velocidade = maxVelocidade;
-
-        cur_color = calcularCor(cur);
-        cur.r = cur_color[0];
-        cur.g = cur_color[1];
-        cur.b = cur_color[2];
-
+        cur = crossover(pop[best], pop[i], mutacaoBase);
         next_gen.push_back(cur);
       }
     } 
-    //i != best ? next_gen.push_back(((pop[i]+pop[best])/2.0) + ((rand()%VAR)-VAR/2)*MUTATION) : next_gen.push_back(pop[i]);
 
     // substitui a população atual pela nova
     pop = next_gen;
@@ -235,34 +242,60 @@ void elitism(vector<Bixinho> &pop, int best){
     return;
 }
 
-// void tournament_2(vector<double> &pop, int best) {
-//     vector<double> next_gen;
-//     next_gen.push_back(pop[best]);
+void tournament_2(vector<Bixinho> &pop, int best){
+  vector<Bixinho> next_gen;
+  Bixinho cur;
+  int size = pop.size();
+  next_gen.push_back(pop[best]);
 
-//     int father;                 // índice do pai
-//     int mother;                 // índice da mãe
-//     pair<int,int> duel;         // índice dos indivíduos que participarão do torneio
+  int father;          // índice do pai
+  int mother;          // índice da mãe
+  pair<int,int> duel;  // índice dos indivíduos que participarão do torneio
 
-//     // produz novos indivíduos
-//     for(int i = 1; i < SIZE; ++i) {
-//         // seleciona pai
-//         duel.first = rand() % SIZE;
-//         duel.second = rand() % SIZE;
-//         father = f(pop[duel.first]) > f(pop[duel.second]) ? duel.first : duel.second;
+  // produz novos indivíduos
+  for(int i = 1; i < size; ++i){
+    // seleciona pai
+    duel.first = rand() % size;
+    duel.second = rand() % size;
+    father = pop[duel.first].pontos > pop[duel.second].pontos ? duel.first : duel.second;
 
-//         // seleciona mãe
-//         duel.first = rand() % SIZE;
-//         duel.second = rand() % SIZE;
-//         mother = f(pop[duel.first]) > f(pop[duel.second]) ? duel.first : duel.second;
+    // seleciona mãe
+    duel.first = rand() % size;
+    duel.second = rand() % size;
+    mother = pop[duel.first].pontos > pop[duel.second].pontos ? duel.first : duel.second;
 
-//         next_gen.push_back(((pop[father]+pop[mother])/2.0) + ((rand()%VAR)-VAR/2)*MUTATION);
-//     }
+    cur = crossover(pop[father], pop[mother], mutacaoBase);
+    next_gen.push_back(cur);
+  }
 
-//     // substitui a população atual pela nova
-//     for(int i = 0; i < SIZE; ++i) pop[i] = next_gen[i];
+  // substitui a população atual pela nova
+  for(int i = 0; i < size; ++i) 
+    pop[i] = next_gen[i];
 
-//     return;
-// }
+  return;
+}
+
+Bixinho asexualReproduction(Bixinho b, float taxaMutacao){
+  Bixinho novo;
+  vector<float> color;
+
+  novo.curComida = NULL;
+  novo.pontos = 0;
+  novo.energia = energiaInicial;
+
+  novo.radius = b.radius + mutation(minRadius, maxRadius, taxaMutacao);
+  novo.percep = b.percep + mutation(minPercep, maxPercep, taxaMutacao);
+  novo.velocidade = b.velocidade + mutation(minVelocidade, maxVelocidade, taxaMutacao);
+
+  checkChromosomes(&novo);
+
+  color = calcularCor(novo);
+  novo.r = color[0];
+  novo.g = color[1];
+  novo.b = color[2];
+
+  return novo;
+}
 
 void writeBixinhoData(string filename, string mode, Bixinho B, int geracao){
   FILE *f;
