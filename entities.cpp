@@ -309,8 +309,7 @@ void writeBixinhoData(string filename, string mode, Bixinho B, int geracao){
     fputs((to_string(B.energia) + ",").c_str(),f);
     fputs((to_string(B.pontos) + ",").c_str(),f);
     fputs((to_string(B.velocidade) + ",").c_str(),f);
-    fputs((to_string(B.percep) + ",").c_str(),f);
-    fputs("\n",f);
+    fputs((to_string(B.percep) + "\n").c_str(),f);
     fclose(f);
   }
 }
