@@ -6,7 +6,7 @@
  - [ ] No ponto csv - dados de todos os elementos ordenados pela pontuação.
 
  ### coisas para conversar
- - [v] O melhor bixo não reseta nem energia, nem pontuação
+ - [x] O melhor bixo não reseta nem energia, nem pontuação
 
  ### coisas a mais
  - [ ] Predador
