@@ -313,3 +313,13 @@ void writeBixinhoData(string filename, string mode, Bixinho B, int geracao){
     fclose(f);
   }
 }
+bool compareBixinho(Bixinho a, Bixinho b){
+  return a.pontos > b.pontos;
+}
+
+void writePopulacaoData(vector <Bixinho> &populacao,string filename, string mode, int geracao){
+  int sizePop = int(populacao.size());
+  sort(populacao.begin(),populacao.end(), compareBixinho);
+  for (int i = 0; i < sizePop; i++)
+    writeBixinhoData(filename, mode ,populacao[i], geracao);
+}

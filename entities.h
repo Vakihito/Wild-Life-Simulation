@@ -5,6 +5,7 @@
 #include <math.h>
 #include <vector>
 #include <time.h>
+#include <algorithm>
 
 using namespace std;
 
@@ -226,5 +227,7 @@ Bixinho asexualReproduction(Bixinho b, float taxaMutacao);
     @param geracao: número da geração à qual o bixinho pertence
 */
 void writeBixinhoData(string filename, string mode, Bixinho B, int geracao);
+
+void writePopulacaoData(vector <Bixinho> &populacao,string filename, string mode, int geracao);
 
 #endif

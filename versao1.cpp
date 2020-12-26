@@ -138,8 +138,8 @@ void timer(int){
       print_text(to_string(avg_fitness), "white", true);
       print_text("Tamanho da populacao: ", "yellow", false);
       print_text(to_string(populacao.size()), "white", true);
-      writeBixinhoData("data.csv","a",populacao[best_index],geracao);
-      
+      writePopulacaoData(populacao, "data.csv", "a", geracao);
+            
       elitism(populacao, best_index);
       geracao++;
     }
