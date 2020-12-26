@@ -13,7 +13,8 @@ using namespace std;
 #define diasPorGeracao 10       // quantidade de ciclos por verificação
 #define pontosPorComida 1       // quantidade de pontos obtidos para cada comida coletaa
 #define energiaInicial 10       // valor inicial de energia de um indivíduo
-#define mutacaoBase 0.02        // taxa de mutação de referência
+#define mutacaoBase 10        // taxa de mutação de referência
+#define maxMutation 1000         // taxa de mutação máxima
 #define energyCostBias 5        // numero multiplicado pelo formula de energia 
 #define timeEnergyCheck 1       // define o tempo em que atualizamos a energia 
 #define enegyAgain 5            // energia ganha ao comer
@@ -229,5 +230,7 @@ Bixinho asexualReproduction(Bixinho b, float taxaMutacao);
 void writeBixinhoData(string filename, string mode, Bixinho B, int geracao);
 
 void writePopulacaoData(vector <Bixinho> &populacao,string filename, string mode, int geracao);
+
+float variableMutation(vector<Bixinho>populacao, int Best);
 
 #endif

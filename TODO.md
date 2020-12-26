@@ -7,7 +7,6 @@
 
  ### coisas para conversar
  - [x] O melhor bixo não reseta nem energia, nem pontuação
- - [ ] Percepçao como valor vaiável
 
  ### coisas a mais
  - [ ] Predador

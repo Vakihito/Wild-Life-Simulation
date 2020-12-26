@@ -226,12 +226,13 @@ void elitism(vector<Bixinho> &pop, int best){
     vector<Bixinho> next_gen;
     Bixinho cur; 
     int size = pop.size();
+    float taxaMutacao = variableMutation(pop, best);
 
     // produz novos indivíduos
     next_gen.push_back(pop[best]);
     for(int i = 0; i < size; ++i){
       if(i != best){
-        cur = crossover(pop[best], pop[i], mutacaoBase);
+        cur = crossover(pop[best], pop[i], taxaMutacao);
         next_gen.push_back(cur);
       }
     } 
@@ -252,6 +253,9 @@ void tournament_2(vector<Bixinho> &pop, int best){
   int mother;          // índice da mãe
   pair<int,int> duel;  // índice dos indivíduos que participarão do torneio
 
+  float taxaMutacao = variableMutation(pop, best);
+
+
   // produz novos indivíduos
   for(int i = 1; i < size; ++i){
     // seleciona pai
@@ -264,7 +268,7 @@ void tournament_2(vector<Bixinho> &pop, int best){
     duel.second = rand() % size;
     mother = pop[duel.first].pontos > pop[duel.second].pontos ? duel.first : duel.second;
 
-    cur = crossover(pop[father], pop[mother], mutacaoBase);
+    cur = crossover(pop[father], pop[mother], taxaMutacao);
     next_gen.push_back(cur);
   }
 
@@ -322,4 +326,43 @@ void writePopulacaoData(vector <Bixinho> &populacao,string filename, string mode
   sort(populacao.begin(),populacao.end(), compareBixinho);
   for (int i = 0; i < sizePop; i++)
     writeBixinhoData(filename, mode ,populacao[i], geracao);
+}
+
+float calculateTaxaMutacao(float maxDistance, float minDistance, float meanDistance){
+  if ((meanDistance + minDistance + meanDistance) == 0)
+    return maxMutation;
+  
+  float taxaMutacao = mutacaoBase/(meanDistance + minDistance + meanDistance); 
+  
+  if (taxaMutacao > maxMutation)
+    taxaMutacao = maxMutation;
+  
+  return taxaMutacao;
+}
+
+float distanceBB(Bixinho a, Bixinho b){
+  float speedDiff = abs(a.velocidade - b.velocidade);
+  float percepDiff = abs(a.velocidade - b.velocidade);
+  float radiusDiff = abs(a.velocidade - b.velocidade);
+  return (speedDiff + percepDiff + radiusDiff); 
+}
+
+float variableMutation(vector<Bixinho>populacao, int Best){
+  float meanDistance = 0;
+  float maxDistance = -1;
+  float minDistance = INFINITY;
+  float curDist = 0;
+  int sizePop = int(populacao.size());
+  for (int i = 0; i < sizePop; i++)
+  {
+    if (i != Best)
+    {
+      curDist = distanceBB(populacao[i],populacao[Best]);
+      maxDistance = max(maxDistance, curDist);
+      minDistance = min(minDistance, curDist);
+      meanDistance += curDist;
+    }
+  }
+
+  return calculateTaxaMutacao(maxDistance, minDistance, meanDistance);
 }
