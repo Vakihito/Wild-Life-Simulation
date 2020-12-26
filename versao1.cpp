@@ -120,16 +120,15 @@ void timer(int){
     subtractEnergy(populacao);
   }
 
-
-  best_index = chooseBest(populacao);
   if(!melaoAtivo){
     dia++;
+    
     if(dia == diasPorGeracao){
+      best_index = chooseBest(populacao);
       curTime = clock();
       dia = 1;
       print_text("Geração " + to_string(geracao), "green", true);
 
-      
       float avg_fitness = averageFitness(populacao);
 
       print_text("Melhor Fitness: ", "yellow", false);
@@ -141,12 +140,20 @@ void timer(int){
       writeBixinhoData("data.csv","a",populacao[best_index],geracao);
       
       elitism(populacao, best_index);
+
+      if(geracao % geracoesPorPredacao == 0) {
+        print_text("Aplicando predação...", "red", true);
+        synthesisPredation(populacao, taxaDePredacao);
+      }
+
       geracao++;
+
+      for(int i = 0; i < populacao.size(); ++i)
+        populacao[i].pontos = 0;
     }
     inicializarPopulacao();
     inicializarPosicaoComida();
   }
-      
 
   // Executa a função draw para desenhar novamente
   glutPostRedisplay();
@@ -233,8 +240,8 @@ void drawComida(Comida comida){
 void inicializarPopulacao() {
   int r = 1;
   for(int i = 0; i < populacao.size(); ++i) {
+    populacao[i].energia = energiaInicial;
     populacao[i].active = true;
-    populacao[i].pontos = 0;
     populacao[i].theta = (360*i)/populacaoInicial;
     populacao[i].x = r*cos(populacao[i].theta);
     populacao[i].y = r*sin(populacao[i].theta);

@@ -72,14 +72,10 @@ float energyCost(Bixinho b){
 }
 
 void subtractEnergy(vector<Bixinho> &populacao){
-  for (int i = 0; i < int(populacao.size()) ; i++)
-  {
+  for(int i = 0; i < int(populacao.size()); i++){
     populacao[i].energia = populacao[i].energia -(energyCost(populacao[i]) * energyCostBias);
-    if (populacao[i].energia <= 0)
-    {
+    if(populacao[i].energia <= 0)
       populacao[i].active = false;
-    }
-    
   }
 }
 
@@ -312,4 +308,90 @@ void writeBixinhoData(string filename, string mode, Bixinho B, int geracao){
     fputs((to_string(B.percep) + "\n").c_str(),f);
     fclose(f);
   }
+}
+
+bool compareBixinhos(const Bixinho &a, const Bixinho &b){
+    return a.pontos < b.pontos;
+}
+
+void genocide(vector<Bixinho> &pop, bool manterMelhorVivo, int idx){
+  int size = pop.size();
+
+  pop[0] = manterMelhorVivo ? pop[idx] : gerarBixinho();
+  for(int i = 1; i < size; ++i)
+    pop[i] = gerarBixinho();
+
+  return;
+}
+
+void randomPredation(vector<Bixinho> &pop, float taxaPredacao){
+  int size = pop.size();
+  int numPresas = min(float(size-1), max(float(1), taxaPredacao * size));
+
+  sort(pop.begin(), pop.end(), compareBixinhos);
+
+  for(int i = 0; i < numPresas; ++i)
+    pop[size - i - 1] = gerarBixinho();
+
+  return;
+}
+
+Bixinho gerarBixinhoLimpo(){
+  Bixinho novo;
+  novo.radius = 0;
+  novo.percep = 0;
+  novo.velocidade = 0;
+  novo.pontos = 0;
+  novo.energia = energiaInicial;
+  novo.active = true;
+  novo.curComida = NULL;
+
+  return novo;
+}
+
+void synthesisPredation(vector<Bixinho> &pop, float taxaPredacao){
+  int size = pop.size();
+  int numPresas = min(float(size-1), max(float(1), taxaPredacao * size));
+  Bixinho sintese = gerarBixinhoLimpo();
+  vector<float> cor;
+
+  sintese.curComida = NULL;
+
+  sort(pop.begin(), pop.end(), compareBixinhos);
+
+  for(int i = 0; i < size; ++i){
+    sintese.radius += pop[i].radius;
+    sintese.percep += pop[i].percep;
+    sintese.velocidade += pop[i].velocidade;
+  }
+
+  sintese.radius /= size;
+  sintese.percep /= size;
+  sintese.velocidade /= size;
+
+  checkChromosomes(&sintese);
+
+  cor = calcularCor(sintese);
+  sintese.r = cor[0];
+  sintese.g = cor[1];
+  sintese.b = cor[2];
+
+  pop[size - 1] = sintese;
+
+  for(int i = 0; i < numPresas-1; ++i){
+    pop[size - i - 2] = gerarBixinhoLimpo();
+    pop[size - i - 2].radius = sintese.radius + mutation(minRadius, maxRadius, mutacaoBase);
+    pop[size - i - 2].percep = sintese.percep + mutation(minPercep, maxPercep, mutacaoBase);
+    pop[size - i - 2].velocidade = sintese.velocidade + mutation(minVelocidade, maxVelocidade, mutacaoBase);
+
+    cor = calcularCor(pop[size - i - 2]);
+    pop[size - i - 2].r = cor[0];
+    pop[size - i - 2].g = cor[1];
+    pop[size - i - 2].b = cor[2];
+  }
+
+    for(int i = 0; i < size; ++i)
+      cout << pop[i].radius << " " << pop[i].percep << " " << pop[i].velocidade << endl;
+
+  return;
 }

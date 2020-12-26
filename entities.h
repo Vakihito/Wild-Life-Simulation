@@ -5,11 +5,14 @@
 #include <math.h>
 #include <vector>
 #include <time.h>
+#include <algorithm>
 
 using namespace std;
 
 #define populacaoInicial 10     // número de indivíduos da geração 1
 #define diasPorGeracao 10       // quantidade de ciclos por verificação
+#define geracoesPorPredacao 10  // quantidade de gerações até ser aplicada a predação 
+#define taxaDePredacao 0.3      // taxa de predação padrão
 #define pontosPorComida 1       // quantidade de pontos obtidos para cada comida coletaa
 #define energiaInicial 10       // valor inicial de energia de um indivíduo
 #define mutacaoBase 0.02        // taxa de mutação de referência
@@ -23,7 +26,8 @@ using namespace std;
 #define maxRadius 0.1
 #define minPercep 0.3
 #define maxPercep 1.0
-#define slowness 10
+
+#define slowness 100
 
 typedef struct _comida {
   float radius;   // comprimento do raio (tamanho)
@@ -226,5 +230,29 @@ Bixinho asexualReproduction(Bixinho b, float taxaMutacao);
     @param geracao: número da geração à qual o bixinho pertence
 */
 void writeBixinhoData(string filename, string mode, Bixinho B, int geracao);
+/*
+    Aplica o método de genocídio na população
+    @param pop: população de bixinhos 
+    @param manterMelhorVivo: indica se o processo manterá o melhor indivíduo vivo
+    @param idx: índice do melhor indivíduo no vetor da população
+*/
+void genocide(vector<Bixinho> &pop, bool manterMelhorVivo, int idx);
+/*
+    Aplica o método de predação aleatória em um conjunto de indivíduos da população
+    @param pop: população de bixinhos
+    @param taxaPredacao: taxa de bixinhos que serão predados
+*/
+void randomPredation(vector<Bixinho> &pop, float taxaPredacao);
+/*
+    Produz um indivíduo com seus atributos zerados
+    @return novo bixinho
+*/
+Bixinho gerarBixinhoLimpo();
+/*
+    Aplica o método de predação por síntese em um conjunto de indivíduos da população
+    @param pop: população de bixinhos
+    @param taxaPredacao: taxa de bixinhos que serão predados
+*/
+void synthesisPredation(vector<Bixinho> &pop, float taxaPredacao);
 
 #endif
