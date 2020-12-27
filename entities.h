@@ -278,4 +278,6 @@ void writePopulacaoData(vector <Bixinho> &populacao,string filename, string mode
 
 float variableMutation(vector<Bixinho>populacao, int Best);
 
+float distanceBB(Bixinho a, Bixinho b);
+
 #endif

@@ -301,7 +301,7 @@ Bixinho asexualReproduction(Bixinho b, float taxaMutacao){
   return novo;
 }
 
-void writeBixinhoData(string filename, string mode, Bixinho B, int geracao){
+void writeBixinhoData(string filename, string mode, Bixinho B, Bixinho Best, int geracao){
   FILE *f;
   const char *auxFile = filename.c_str();
   const char *auxMode = mode.c_str();
@@ -313,7 +313,8 @@ void writeBixinhoData(string filename, string mode, Bixinho B, int geracao){
     fputs((to_string(B.energia) + ",").c_str(),f);
     fputs((to_string(B.pontos) + ",").c_str(),f);
     fputs((to_string(B.velocidade) + ",").c_str(),f);
-    fputs((to_string(B.percep) + "\n").c_str(),f);
+    fputs((to_string(B.percep) + ",").c_str(),f);
+    fputs((to_string(distanceBB(B, Best)) + "\n").c_str(),f);
     fclose(f);
   }
 }
@@ -405,7 +406,7 @@ void writePopulacaoData(vector <Bixinho> &populacao,string filename, string mode
   int sizePop = int(populacao.size());
   sort(populacao.begin(),populacao.end(), compareBixinho);
   for (int i = 0; i < sizePop; i++)
-    writeBixinhoData(filename, mode ,populacao[i], geracao);
+    writeBixinhoData(filename, mode ,populacao[i],populacao[0], geracao);
 }
 
 float calculateTaxaMutacao(float maxDistance, float minDistance, float meanDistance){
@@ -423,10 +424,10 @@ float calculateTaxaMutacao(float maxDistance, float minDistance, float meanDista
 }
 
 float distanceBB(Bixinho a, Bixinho b){
-  float speedDiff = abs(a.velocidade - b.velocidade);
-  float percepDiff = abs(a.velocidade - b.velocidade);
-  float radiusDiff = abs(a.velocidade - b.velocidade);
-  return (speedDiff + percepDiff + radiusDiff); 
+  float redDiff = abs(a.r - b.r);
+  float greenDiff = abs(a.g - b.g);
+  float blueDiff = abs(a.b - b.b);
+  return (redDiff + greenDiff + blueDiff); 
 }
 
 float variableMutation(vector<Bixinho>populacao, int Best){
