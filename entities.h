@@ -271,4 +271,8 @@ void synthesisPredation(vector<Bixinho> &pop, float taxaPredacao);
 */
 float variableMutation(vector<Bixinho>populacao, int Best);
 
+void writePopulacaoData(vector <Bixinho> &populacao,string filename, string mode, int geracao);
+
+float variableMutation(vector<Bixinho>populacao, int Best);
+
 #endif

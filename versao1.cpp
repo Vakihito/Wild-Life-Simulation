@@ -138,7 +138,7 @@ void timer(int){
       print_text("Tamanho da populacao: ", "yellow", false);
       print_text(to_string(populacao.size()), "white", true);
       writePopulacaoData(populacao, "data.csv", "a", geracao);
-      
+
       elitism(populacao, best_index);
 
       if(geracao % geracoesPorPredacao == 0) {

@@ -250,6 +250,9 @@ void tournament_2(vector<Bixinho> &pop, int best){
   int mother;          // índice da mãe
   pair<int,int> duel;  // índice dos indivíduos que participarão do torneio
 
+  float taxaMutacao = variableMutation(pop, best);
+
+
   // produz novos indivíduos
   for(int i = 1; i < size; ++i){
     // seleciona pai
