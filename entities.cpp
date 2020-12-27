@@ -222,12 +222,13 @@ void elitism(vector<Bixinho> &pop, int best){
     vector<Bixinho> next_gen;
     Bixinho cur; 
     int size = pop.size();
+    float taxaMutacao = variableMutation(pop, best);
 
     // produz novos indivíduos
     next_gen.push_back(pop[best]);
     for(int i = 0; i < size; ++i){
       if(i != best){
-        cur = crossover(pop[best], pop[i], mutacaoBase);
+        cur = crossover(pop[best], pop[i], taxaMutacao);
         next_gen.push_back(cur);
       }
     } 
@@ -243,6 +244,7 @@ void tournament_2(vector<Bixinho> &pop, int best){
   Bixinho cur;
   int size = pop.size();
   next_gen.push_back(pop[best]);
+  float taxaMutacao = variableMutation(pop, best);
 
   int father;          // índice do pai
   int mother;          // índice da mãe
@@ -260,7 +262,7 @@ void tournament_2(vector<Bixinho> &pop, int best){
     duel.second = rand() % size;
     mother = pop[duel.first].pontos > pop[duel.second].pontos ? duel.first : duel.second;
 
-    cur = crossover(pop[father], pop[mother], mutacaoBase);
+    cur = crossover(pop[father], pop[mother], taxaMutacao);
     next_gen.push_back(cur);
   }
 
@@ -310,8 +312,8 @@ void writeBixinhoData(string filename, string mode, Bixinho B, int geracao){
   }
 }
 
-bool compareBixinhos(const Bixinho &a, const Bixinho &b){
-    return a.pontos < b.pontos;
+bool compareBixinho(const Bixinho &a, const Bixinho &b){
+    return a.pontos > b.pontos;
 }
 
 void genocide(vector<Bixinho> &pop, bool manterMelhorVivo, int idx){
@@ -328,10 +330,10 @@ void randomPredation(vector<Bixinho> &pop, float taxaPredacao){
   int size = pop.size();
   int numPresas = min(float(size-1), max(float(1), taxaPredacao * size));
 
-  sort(pop.begin(), pop.end(), compareBixinhos);
+  sort(pop.begin(), pop.end(), compareBixinho);
 
   for(int i = 0; i < numPresas; ++i)
-    pop[size - i - 1] = gerarBixinho();
+    pop[i] = gerarBixinho();
 
   return;
 }
@@ -357,7 +359,7 @@ void synthesisPredation(vector<Bixinho> &pop, float taxaPredacao){
 
   sintese.curComida = NULL;
 
-  sort(pop.begin(), pop.end(), compareBixinhos);
+  sort(pop.begin(), pop.end(), compareBixinho);
 
   for(int i = 0; i < size; ++i){
     sintese.radius += pop[i].radius;
@@ -376,22 +378,63 @@ void synthesisPredation(vector<Bixinho> &pop, float taxaPredacao){
   sintese.g = cor[1];
   sintese.b = cor[2];
 
-  pop[size - 1] = sintese;
+  pop[1] = sintese;
 
   for(int i = 0; i < numPresas-1; ++i){
-    pop[size - i - 2] = gerarBixinhoLimpo();
-    pop[size - i - 2].radius = sintese.radius + mutation(minRadius, maxRadius, mutacaoBase);
-    pop[size - i - 2].percep = sintese.percep + mutation(minPercep, maxPercep, mutacaoBase);
-    pop[size - i - 2].velocidade = sintese.velocidade + mutation(minVelocidade, maxVelocidade, mutacaoBase);
+    pop[i+2] = gerarBixinhoLimpo();
+    pop[i+2].radius = sintese.radius + mutation(minRadius, maxRadius, mutacaoBase);
+    pop[i+2].percep = sintese.percep + mutation(minPercep, maxPercep, mutacaoBase);
+    pop[i+2].velocidade = sintese.velocidade + mutation(minVelocidade, maxVelocidade, mutacaoBase);
 
-    cor = calcularCor(pop[size - i - 2]);
-    pop[size - i - 2].r = cor[0];
-    pop[size - i - 2].g = cor[1];
-    pop[size - i - 2].b = cor[2];
+    cor = calcularCor(pop[i+2]);
+    pop[i+2].r = cor[0];
+    pop[i+2].g = cor[1];
+    pop[i+2].b = cor[2];
   }
 
-    for(int i = 0; i < size; ++i)
-      cout << pop[i].radius << " " << pop[i].percep << " " << pop[i].velocidade << endl;
-
   return;
+}
+
+void writePopulacaoData(vector <Bixinho> &populacao,string filename, string mode, int geracao){
+  int sizePop = int(populacao.size());
+  sort(populacao.begin(),populacao.end(), compareBixinho);
+  for (int i = 0; i < sizePop; i++)
+    writeBixinhoData(filename, mode ,populacao[i], geracao);
+}
+
+float calculateTaxaMutacao(float maxDistance, float minDistance, float meanDistance){
+  if((meanDistance + minDistance + meanDistance) == 0)
+    return maxMutation;
+
+  float taxaMutacao = mutacaoBase/(meanDistance + minDistance + meanDistance); 
+
+  if(taxaMutacao > maxMutation)
+    taxaMutacao = maxMutation;
+
+  return taxaMutacao;
+}
+
+float distanceBB(Bixinho a, Bixinho b){
+  float speedDiff = abs(a.velocidade - b.velocidade);
+  float percepDiff = abs(a.velocidade - b.velocidade);
+  float radiusDiff = abs(a.velocidade - b.velocidade);
+  return (speedDiff + percepDiff + radiusDiff); 
+}
+
+float variableMutation(vector<Bixinho>populacao, int Best){
+  float meanDistance = 0;
+  float maxDistance = -1;
+  float minDistance = INFINITY;
+  float curDist = 0;
+  int sizePop = int(populacao.size());
+  for(int i = 0; i < sizePop; i++){
+    if(i != Best){
+      curDist = distanceBB(populacao[i],populacao[Best]);
+      maxDistance = max(maxDistance, curDist);
+      minDistance = min(minDistance, curDist);
+      meanDistance += curDist;
+    }
+  }
+
+  return calculateTaxaMutacao(maxDistance, minDistance, meanDistance);
 }
