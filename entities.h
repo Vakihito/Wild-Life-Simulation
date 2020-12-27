@@ -20,6 +20,9 @@ using namespace std;
 #define energyCostBias 5        // numero multiplicado pelo formula de energia 
 #define timeEnergyCheck 1       // define o tempo em que atualizamos a energia 
 #define enegyAgain 10           // energia ganha ao comer
+#define generationsEffect 4     // gerações afetadas após pouca mutação
+#define minSumMutation 2     // menor distância da soma de avg, min, max para começargrande mudanca de gerações.  
+#define drasticMutation 4       // mutação drástica gerada 
 
 #define minVelocidade 0.3
 #define maxVelocidade 1.0

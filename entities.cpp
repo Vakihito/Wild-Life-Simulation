@@ -1,4 +1,8 @@
 #include "entities.h"
+#include "util.h"
+
+int startGeneration = -1; // conta as gerações que passaram dês do evento de pouco mutação
+
 
 float RandomFloat(float a, float b){
   float random = ((float) rand()) / (float) RAND_MAX;
@@ -250,7 +254,6 @@ void tournament_2(vector<Bixinho> &pop, int best){
   int mother;          // índice da mãe
   pair<int,int> duel;  // índice dos indivíduos que participarão do torneio
 
-  float taxaMutacao = variableMutation(pop, best);
 
 
   // produz novos indivíduos
@@ -406,8 +409,10 @@ void writePopulacaoData(vector <Bixinho> &populacao,string filename, string mode
 }
 
 float calculateTaxaMutacao(float maxDistance, float minDistance, float meanDistance){
-  if((meanDistance + minDistance + meanDistance) == 0)
+  if((meanDistance + minDistance + meanDistance) < minSumMutation){
+    startGeneration = generationsEffect;
     return maxMutation;
+  }
 
   float taxaMutacao = mutacaoBase/(meanDistance + minDistance + meanDistance); 
 
@@ -439,5 +444,12 @@ float variableMutation(vector<Bixinho>populacao, int Best){
     }
   }
 
-  return calculateTaxaMutacao(maxDistance, minDistance, meanDistance);
+  float taxaMutacao = calculateTaxaMutacao(maxDistance, minDistance, meanDistance);
+  if (startGeneration > 0){
+    print_text("Aplicanto Elevada mutação para nas próximas : " + to_string(startGeneration) + " gerações", "yellow", true);
+    startGeneration -= 1;
+    return drasticMutation;
+  }
+  
+  return taxaMutacao;
 }

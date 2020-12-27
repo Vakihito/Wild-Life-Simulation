@@ -1,9 +1,10 @@
  # Para fazer
  ### Tarefas
- - [ ] Mutação variável - tanto média, quanto maior, distância dos indivíduos 
+ - [x] Mutação variável - tanto média, quanto maior, distância dos indivíduos 
  - [x] Genocídio
  - [x] Predação Randômica
- - [ ] No ponto csv - dados de todos os elementos ordenados pela pontuação.
+ - [x] No ponto csv - dados de todos os elementos ordenados pela pontuação.
+ - [ ] Aumentar mutação ao longo de gerações caso alguma gere pouca mutação
 
  ### Coisas para conversar
  - [x] O melhor bixo não reseta nem energia, nem pontuação
