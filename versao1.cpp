@@ -35,18 +35,65 @@ bool applyPredation = false;  // indica se será aplicada a predação na popula
 clock_t curTime = clock();
 
 //---------- Protótipos de função ----------//
-void draw();                                          // Função para desenhar
-void timer(int);                                      // Função de loop
-void drawBixinho(Bixinho bixinho);                    // Desenhar bixinho
-void drawPopulacao(int size);                         // Desenhar população de bixinhos
-void drawComida(Comida comida);                       // Desenhar comida
-float RandomFloat(float a, float b);                  // Gerar float aleatorio
-void inicializarPopulacao();
-void inicializarPosicaoComida();
+void draw();                                      // Função para desenhar
+void timer(int);                                  // Função de loop
+void drawBixinho(Bixinho bixinho);                // Desenhar bixinho
+void drawPopulacao(int size);                     // Desenhar população de bixinhos
+void drawComida(Comida comida);                   // Desenhar comida
+float RandomFloat(float a, float b);              // Gerar float aleatorio
+void inicializarPopulacao();                      // Inicializa posição e outros atributos da população
+void inicializarPosicaoComida();                  // Inicializa posição e outros atributos da comida
+char menu();                                      // Exibe menu inicial na tela
+
+char menu(){
+  char mode = '0';
+
+  while(mode != '1' && mode != '2' && mode != '4'){
+    print_text("Digite o modo de execução do programa:", "green", true);
+    print_text("[1] Seleção Natural", "white", true);
+    print_text("[2] Seleção Artificial", "white", true);
+    print_text("[3] Detalhes", "yellow", true);
+    print_text("[4] Sair", "yellow", true);
+    cin >> mode;
+
+    switch(mode){
+    case '1':
+      print_text("Seleção Natural escolhida", "green", true);
+      break;
+    case '2':
+      print_text("Seleção Artificial escolhida", "green", true);
+      break;
+    case '3':
+      cout << "\n";
+      print_text("[@]Seleção Natural:", "blue", true);
+      print_text(">> Taxa de mutação constante", "white", true);
+      print_text(">> Tamanho da população dinâmico", "white", true);
+      print_text(">> Reprodução Assexuada", "white", true);
+      print_text(">> Predação sem reposição", "white", true);
+      cout << "\n";
+      print_text("[@]Seleção Artificial:", "blue", true);
+      print_text(">> Taxa de mutação dinâmica", "white", true);
+      print_text(">> Tamanho da população constante", "white", true);
+      print_text(">> Reprodução por Elitismo ou Torneio de 2", "white", true);
+      print_text(">> Predação com reposição (Predação Randômica ou Predação por Síntese)", "white", true);
+      cout << "\n";
+    case '4':
+      break;
+    default:
+      print_text("Instrução inválida", "red", true);
+      break;
+    } 
+  }
+
+  return mode;
+}
 
 //------------------ Main -----------------//
 int main(int argc, char** argv){
   srand(time(NULL));
+
+  char mode = menu();
+  if(mode == '4') return 0;
 
   dia = 1;
   geracao = 1;
@@ -58,7 +105,7 @@ int main(int argc, char** argv){
 
   // inicializa as comidas
   for(int i = 0; i < qMelao; i++) {
-    melao.push_back({0.02, RandomFloat(-1,1), RandomFloat(-1,1),0, 0, 0.8, 0.8, true});
+    melao.push_back({0.015, RandomFloat(-1,1), RandomFloat(-1,1),0, 0, 0.8, 0.8, true});
   }
 
   glutInit(&argc, argv);
@@ -245,7 +292,7 @@ void drawComida(Comida comida){
   glColor3f(comida.r, comida.g, comida.b);
   glBegin(GL_POLYGON);
   for (int i = 0; i < 360; i += 5) {
-    glVertex2d( radius*cos(i/180.0*M_PI) + x, radius*sin(i/180.0*M_PI) + y);
+    glVertex2d(radius*cos(i/180.0*M_PI) + x, radius*sin(i/180.0*M_PI) + y);
   }
   glEnd();
 }
@@ -264,7 +311,7 @@ void inicializarPopulacao() {
 
 void inicializarPosicaoComida() {
   for(int i = 0; i < qMelao; i++) {
-    melao[i] = {0.02, RandomFloat(-1,1), RandomFloat(-1,1),0, 0, 0.8, 0.8, true};
+    melao[i] = {0.015, RandomFloat(-1,1), RandomFloat(-1,1),0, 0, 0.8, 0.8, true};
   }
   return;
 }

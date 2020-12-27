@@ -408,12 +408,12 @@ void writePopulacaoData(vector <Bixinho> &populacao,string filename, string mode
 }
 
 float calculateTaxaMutacao(float maxDistance, float minDistance, float meanDistance){
-  if((meanDistance + minDistance + meanDistance) < minSumMutation){
+  if((2*meanDistance + minDistance) < minSumMutation){
     startGeneration = generationsEffect;
     return maxMutation;
   }
 
-  float taxaMutacao = mutacaoBase/(meanDistance + minDistance + meanDistance); 
+  float taxaMutacao = mutacaoBase/(2*meanDistance + minDistance); 
 
   if(taxaMutacao > maxMutation)
     taxaMutacao = maxMutation;

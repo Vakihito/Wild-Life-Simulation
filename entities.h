@@ -16,20 +16,20 @@ using namespace std;
 #define pontosPorComida 1       // quantidade de pontos obtidos para cada comida coletaa
 #define energiaInicial 10       // valor inicial de energia de um indivíduo
 #define mutacaoBase 0.02        // taxa de mutação de referência
-#define maxMutation 2           // taxa de mutação máxima
-#define energyCostBias 5        // numero multiplicado pelo formula de energia 
+#define maxMutation 0.1         // taxa de mutação máxima
+#define energyCostBias 5        // numero multiplicado pela fórmula de energia 
 #define timeEnergyCheck 1       // define o tempo em que atualizamos a energia 
 #define energyAgain 5           // energia ganha ao comer
 #define generationsEffect 4     // gerações afetadas após pouca mutação
-#define minSumMutation 0.1      // menor distância da soma de avg, min, max para começar grande mudanca de gerações 
+#define minSumMutation 0.3      // menor distância da soma de avg, min, max para começar grande mudanca de gerações 
 #define drasticMutation 4       // mutação drástica gerada 
 
-#define minVelocidade 0.3
+#define minVelocidade 0.2
 #define maxVelocidade 1.0
-#define minRadius 0.05
+#define minRadius 0.04
 #define maxRadius 0.1
-#define minPercep 0.3
-#define maxPercep 1.0
+#define minPercep 0.4
+#define maxPercep 0.8
 
 #define slowness 20
 
@@ -61,7 +61,6 @@ typedef struct _bixinho {
   Comida *curComida;  // comida para a qual o bixinho está se dirigindo  
   
 }Bixinho;
-
 
 //----------------------------------------------//
 //------------------ Funções -------------------//
