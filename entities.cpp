@@ -72,14 +72,10 @@ float energyCost(Bixinho b){
 }
 
 void subtractEnergy(vector<Bixinho> &populacao){
-  for (int i = 0; i < int(populacao.size()) ; i++)
-  {
+  for(int i = 0; i < int(populacao.size()); i++){
     populacao[i].energia = populacao[i].energia -(energyCost(populacao[i]) * energyCostBias);
-    if (populacao[i].energia <= 0)
-    {
+    if(populacao[i].energia <= 0)
       populacao[i].active = false;
-    }
-    
   }
 }
 
@@ -248,6 +244,7 @@ void tournament_2(vector<Bixinho> &pop, int best){
   Bixinho cur;
   int size = pop.size();
   next_gen.push_back(pop[best]);
+  float taxaMutacao = variableMutation(pop, best);
 
   int father;          // índice do pai
   int mother;          // índice da mãe
@@ -317,8 +314,88 @@ void writeBixinhoData(string filename, string mode, Bixinho B, int geracao){
     fclose(f);
   }
 }
-bool compareBixinho(Bixinho a, Bixinho b){
-  return a.pontos > b.pontos;
+
+bool compareBixinho(const Bixinho &a, const Bixinho &b){
+    return a.pontos > b.pontos;
+}
+
+void genocide(vector<Bixinho> &pop, bool manterMelhorVivo, int idx){
+  int size = pop.size();
+
+  pop[0] = manterMelhorVivo ? pop[idx] : gerarBixinho();
+  for(int i = 1; i < size; ++i)
+    pop[i] = gerarBixinho();
+
+  return;
+}
+
+void randomPredation(vector<Bixinho> &pop, float taxaPredacao){
+  int size = pop.size();
+  int numPresas = min(float(size-1), max(float(1), taxaPredacao * size));
+
+  sort(pop.begin(), pop.end(), compareBixinho);
+
+  for(int i = 0; i < numPresas; ++i)
+    pop[i+1] = gerarBixinho();
+
+  return;
+}
+
+Bixinho gerarBixinhoLimpo(){
+  Bixinho novo;
+  novo.radius = 0;
+  novo.percep = 0;
+  novo.velocidade = 0;
+  novo.pontos = 0;
+  novo.energia = energiaInicial;
+  novo.active = true;
+  novo.curComida = NULL;
+
+  return novo;
+}
+
+void synthesisPredation(vector<Bixinho> &pop, float taxaPredacao){
+  int size = pop.size();
+  int numPresas = min(float(size-1), max(float(1), taxaPredacao * size));
+  Bixinho sintese = gerarBixinhoLimpo();
+  vector<float> cor;
+
+  sintese.curComida = NULL;
+
+  sort(pop.begin(), pop.end(), compareBixinho);
+
+  for(int i = 0; i < size; ++i){
+    sintese.radius += pop[i].radius;
+    sintese.percep += pop[i].percep;
+    sintese.velocidade += pop[i].velocidade;
+  }
+
+  sintese.radius /= size;
+  sintese.percep /= size;
+  sintese.velocidade /= size;
+
+  checkChromosomes(&sintese);
+
+  cor = calcularCor(sintese);
+  sintese.r = cor[0];
+  sintese.g = cor[1];
+  sintese.b = cor[2];
+
+  pop[1] = sintese;
+
+  for(int i = 0; i < numPresas-1; ++i){
+    pop[i+2] = gerarBixinhoLimpo();
+    pop[i+2].radius = sintese.radius + mutation(minRadius, maxRadius, mutacaoBase);
+    pop[i+2].percep = sintese.percep + mutation(minPercep, maxPercep, mutacaoBase);
+    pop[i+2].velocidade = sintese.velocidade + mutation(minVelocidade, maxVelocidade, mutacaoBase);
+
+    cor = calcularCor(pop[i+2]);
+    pop[i+2].r = cor[0];
+    pop[i+2].g = cor[1];
+    pop[i+2].b = cor[2];
+  }
+
+  return;
 }
 
 void writePopulacaoData(vector <Bixinho> &populacao,string filename, string mode, int geracao){
@@ -329,14 +406,14 @@ void writePopulacaoData(vector <Bixinho> &populacao,string filename, string mode
 }
 
 float calculateTaxaMutacao(float maxDistance, float minDistance, float meanDistance){
-  if ((meanDistance + minDistance + meanDistance) == 0)
+  if((meanDistance + minDistance + meanDistance) == 0)
     return maxMutation;
-  
+
   float taxaMutacao = mutacaoBase/(meanDistance + minDistance + meanDistance); 
-  
-  if (taxaMutacao > maxMutation)
+
+  if(taxaMutacao > maxMutation)
     taxaMutacao = maxMutation;
-  
+
   return taxaMutacao;
 }
 
@@ -353,10 +430,8 @@ float variableMutation(vector<Bixinho>populacao, int Best){
   float minDistance = INFINITY;
   float curDist = 0;
   int sizePop = int(populacao.size());
-  for (int i = 0; i < sizePop; i++)
-  {
-    if (i != Best)
-    {
+  for(int i = 0; i < sizePop; i++){
+    if(i != Best){
       curDist = distanceBB(populacao[i],populacao[Best]);
       maxDistance = max(maxDistance, curDist);
       minDistance = min(minDistance, curDist);

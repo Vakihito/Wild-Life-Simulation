@@ -1,14 +1,15 @@
- # Para vazer
+ # Para fazer
  ### Tarefas
  - [ ] Mutação variável - tanto média, quanto maior, distância dos indivíduos 
- - [ ] Genocídio
- - [ ] Predação Randômica
+ - [x] Genocídio
+ - [x] Predação Randômica
  - [ ] No ponto csv - dados de todos os elementos ordenados pela pontuação.
 
- ### coisas para conversar
+ ### Coisas para conversar
  - [x] O melhor bixo não reseta nem energia, nem pontuação
+ - [ ] Como aplicar a predação (população após elitismo tem pontuação 0) 
 
- ### coisas a mais
+ ### Coisas a mais
  - [ ] Predador
  - [ ] Criar uma realção entre tamanho e velocidade, caras grandes de mais não podem andar rápido de mais 
  - [ ] Criar possibilidade de Comer o bixinho

@@ -11,20 +11,23 @@ using namespace std;
 
 #define populacaoInicial 10     // número de indivíduos da geração 1
 #define diasPorGeracao 10       // quantidade de ciclos por verificação
+#define geracoesPorPredacao 10  // quantidade de gerações até ser aplicada a predação 
+#define taxaDePredacao 0.3      // taxa de predação padrão
 #define pontosPorComida 1       // quantidade de pontos obtidos para cada comida coletaa
 #define energiaInicial 10       // valor inicial de energia de um indivíduo
-#define mutacaoBase 10        // taxa de mutação de referência
-#define maxMutation 1000         // taxa de mutação máxima
+#define mutacaoBase 0.02        // taxa de mutação de referência
+#define maxMutation 2           // taxa de mutação máxima
 #define energyCostBias 5        // numero multiplicado pelo formula de energia 
 #define timeEnergyCheck 1       // define o tempo em que atualizamos a energia 
-#define enegyAgain 5            // energia ganha ao comer
+#define enegyAgain 10           // energia ganha ao comer
 
 #define minVelocidade 0.3
 #define maxVelocidade 1.0
-#define minRadius 0.03
+#define minRadius 0.05
 #define maxRadius 0.1
 #define minPercep 0.3
 #define maxPercep 1.0
+
 #define slowness 10
 
 typedef struct _comida {
@@ -228,6 +231,45 @@ Bixinho asexualReproduction(Bixinho b, float taxaMutacao);
     @param geracao: número da geração à qual o bixinho pertence
 */
 void writeBixinhoData(string filename, string mode, Bixinho B, int geracao);
+/*
+    Escreve os dados de uma população de bixinhos no arquivo de nome especificado
+    @param populacao: população de bixinhos
+    @param filename: nome do arquivo 
+    @param mode: método de manipulação do arquivo
+    @param geracao: número da geração à qual os bixinhos pertencem
+*/
+void writePopulacaoData(vector <Bixinho> &populacao,string filename, string mode, int geracao);
+/*
+    Aplica o método de genocídio na população
+    @param pop: população de bixinhos 
+    @param manterMelhorVivo: indica se o processo manterá o melhor indivíduo vivo
+    @param idx: índice do melhor indivíduo no vetor da população
+*/
+void genocide(vector<Bixinho> &pop, bool manterMelhorVivo, int idx);
+/*
+    Aplica o método de predação aleatória em um conjunto de indivíduos da população
+    @param pop: população de bixinhos
+    @param taxaPredacao: taxa de bixinhos que serão predados
+*/
+void randomPredation(vector<Bixinho> &pop, float taxaPredacao);
+/*
+    Produz um indivíduo com seus atributos zerados
+    @return novo bixinho
+*/
+Bixinho gerarBixinhoLimpo();
+/*
+    Aplica o método de predação por síntese em um conjunto de indivíduos da população
+    @param pop: população de bixinhos
+    @param taxaPredacao: taxa de bixinhos que serão predados
+*/
+void synthesisPredation(vector<Bixinho> &pop, float taxaPredacao);
+/*
+    Aplica o método de predação por síntese em um conjunto de indivíduos da população
+    @param populacao: população de bixinhos
+    @param Best: índice do melhor indivíduo no vetor da população
+    @return valor da taxa de mutação
+*/
+float variableMutation(vector<Bixinho>populacao, int Best);
 
 void writePopulacaoData(vector <Bixinho> &populacao,string filename, string mode, int geracao);
 
