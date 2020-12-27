@@ -97,7 +97,7 @@ bool checkForColisionBC(Bixinho *b, Comida *c){
         c->active = false;
         b->curComida = NULL;
         b->pontos += 1;
-        b->energia += enegyAgain;
+        b->energia += energyAgain;
         // c->x = RandomFloat(0.1, 1);
         // c->y = RandomFloat(0.1, 1);
         return true;
@@ -228,7 +228,7 @@ void elitism(vector<Bixinho> &pop, int best){
     int size = pop.size();
     float taxaMutacao = variableMutation(pop, best);
 
-    // produz novos indivíduos
+    // produz novos indivíduos    
     next_gen.push_back(pop[best]);
     for(int i = 0; i < size; ++i){
       if(i != best){
@@ -253,8 +253,6 @@ void tournament_2(vector<Bixinho> &pop, int best){
   int father;          // índice do pai
   int mother;          // índice da mãe
   pair<int,int> duel;  // índice dos indivíduos que participarão do torneio
-
-
 
   // produz novos indivíduos
   for(int i = 1; i < size; ++i){
@@ -340,7 +338,7 @@ void randomPredation(vector<Bixinho> &pop, float taxaPredacao){
   sort(pop.begin(), pop.end(), compareBixinho);
 
   for(int i = 0; i < numPresas; ++i)
-    pop[i+1] = gerarBixinho();
+    pop[size - (i+1)] = gerarBixinho();
 
   return;
 }
@@ -385,18 +383,18 @@ void synthesisPredation(vector<Bixinho> &pop, float taxaPredacao){
   sintese.g = cor[1];
   sintese.b = cor[2];
 
-  pop[1] = sintese;
+  pop[size - 1] = sintese;
 
   for(int i = 0; i < numPresas-1; ++i){
-    pop[i+2] = gerarBixinhoLimpo();
-    pop[i+2].radius = sintese.radius + mutation(minRadius, maxRadius, mutacaoBase);
-    pop[i+2].percep = sintese.percep + mutation(minPercep, maxPercep, mutacaoBase);
-    pop[i+2].velocidade = sintese.velocidade + mutation(minVelocidade, maxVelocidade, mutacaoBase);
+    pop[size-i-2] = gerarBixinhoLimpo();
+    pop[size-i-2].radius = sintese.radius + mutation(minRadius, maxRadius, mutacaoBase);
+    pop[size-i-2].percep = sintese.percep + mutation(minPercep, maxPercep, mutacaoBase);
+    pop[size-i-2].velocidade = sintese.velocidade + mutation(minVelocidade, maxVelocidade, mutacaoBase);
 
     cor = calcularCor(pop[i+2]);
-    pop[i+2].r = cor[0];
-    pop[i+2].g = cor[1];
-    pop[i+2].b = cor[2];
+    pop[size-i-2].r = cor[0];
+    pop[size-i-2].g = cor[1];
+    pop[size-i-2].b = cor[2];
   }
 
   return;
@@ -424,10 +422,10 @@ float calculateTaxaMutacao(float maxDistance, float minDistance, float meanDista
 }
 
 float distanceBB(Bixinho a, Bixinho b){
-  float redDiff = abs(a.r - b.r);
-  float greenDiff = abs(a.g - b.g);
-  float blueDiff = abs(a.b - b.b);
-  return (redDiff + greenDiff + blueDiff); 
+  float redDiff = pow((a.r - b.r), 2);
+  float greenDiff = pow((a.g - b.g), 2);
+  float blueDiff = pow((a.b - b.b), 2);
+  return sqrt(redDiff + greenDiff + blueDiff); 
 }
 
 float variableMutation(vector<Bixinho>populacao, int Best){
@@ -446,8 +444,9 @@ float variableMutation(vector<Bixinho>populacao, int Best){
   }
 
   float taxaMutacao = calculateTaxaMutacao(maxDistance, minDistance, meanDistance);
-  if (startGeneration > 0){
-    print_text("Aplicanto Elevada mutação para nas próximas : " + to_string(startGeneration) + " gerações", "yellow", true);
+
+  if(startGeneration > 0){
+    print_text("Aplicando elevada mutação nas próximas " + to_string(startGeneration) + " gerações", "yellow", true);
     startGeneration -= 1;
     return drasticMutation;
   }

@@ -27,10 +27,11 @@ using namespace std;
 
 vector<Bixinho> populacao;
 vector<Comida> melao;
-int dia;                // numero do dia
-int geracao;            // numero da geracao
-int best_index;         // index do melhor bixinho
-int qMelao = 50;        // quantidade de comida
+int dia;                      // numero do dia
+int geracao;                  // numero da geracao
+int best_index;               // index do melhor bixinho
+int qMelao = 50;              // quantidade de comida
+bool applyPredation = false;  // indica se será aplicada a predação na população
 clock_t curTime = clock();
 
 //---------- Protótipos de função ----------//
@@ -92,16 +93,20 @@ void timer(int){
   // Essa função é chamada em loop, é aqui que realizaremos as animações
   int size = populacao.size();
   bool melaoAtivo = false;
+  bool bixinhoAtivo = false;
 
   // Para mover os bixinhos
   for(int i = 0; i < size; i++)
     moveBixinho(&populacao[i], populacao[i].velocidade/slowness);
 
   // Para girar os bixinhos
-  for(int i = 0; i < qMelao; i++) {
-    for(int j = 0; j < size; j++) {
-      decideMovement(&populacao[j], &melao[i]);
-      checkForColisionBC(&populacao[j], &melao[i]);
+  for(int i = 0; i < qMelao; i++){
+    for(int j = 0; j < size; j++){
+      if(populacao[j].active){
+        decideMovement(&populacao[j], &melao[i]);
+        checkForColisionBC(&populacao[j], &melao[i]);
+        bixinhoAtivo = true;
+      }
     }
   }
   // Para mover os bixinhos aleatorimamente caso eles nao tenham uma comida em mente
@@ -115,38 +120,46 @@ void timer(int){
     }
   }
   // de tempos em tempo precisamos retirar uma quantidade x de energia
-  if (clock() - curTime > timeEnergyCheck){
+  if(clock() - curTime > timeEnergyCheck){
     curTime = clock(); 
     subtractEnergy(populacao);
   }
 
-  if(!melaoAtivo){
+  if(!melaoAtivo || !bixinhoAtivo){
     dia++;
-    
+    best_index = chooseBest(populacao);
+
     if(dia == diasPorGeracao){
-      best_index = chooseBest(populacao);
       curTime = clock();
       dia = 1;
-      print_text("Geração " + to_string(geracao), "green", true);
 
-      float avg_fitness = averageFitness(populacao);
+      if(!applyPredation){
+        print_text("Geração " + to_string(geracao), "green", true);
 
-      print_text("Melhor Fitness: ", "yellow", false);
-      print_text(to_string(populacao[best_index].pontos), "white", true);
-      print_text("Fitness Médio: ", "yellow", false);
-      print_text(to_string(avg_fitness), "white", true);
-      print_text("Tamanho da populacao: ", "yellow", false);
-      print_text(to_string(populacao.size()), "white", true);
-      writePopulacaoData(populacao, "data.csv", "a", geracao);
+        float avg_fitness = averageFitness(populacao);
 
-      elitism(populacao, best_index);
+        print_text("Melhor Fitness: ", "yellow", false);
+        print_text(to_string(populacao[best_index].pontos), "white", true);
+        print_text("Fitness Médio: ", "yellow", false);
+        print_text(to_string(avg_fitness), "white", true);
+        print_text("Tamanho da populacao: ", "yellow", false);
+        print_text(to_string(populacao.size()), "white", true);
+        writePopulacaoData(populacao, "data.csv", "a", geracao);
 
-      if(geracao % geracoesPorPredacao == 0) {
+        best_index = chooseBest(populacao);
+        tournament_2(populacao, best_index);
+        geracao++;
+      }
+
+      else{
         print_text("Aplicando predação...", "red", true);
         randomPredation(populacao, taxaDePredacao);
       }
 
-      geracao++;
+      if(geracao % geracoesPorPredacao == 1 && geracao != 1 && !applyPredation)
+        applyPredation = true;
+
+      else applyPredation = false;
 
       for(int i = 0; i < populacao.size(); ++i)
         populacao[i].pontos = 0;
@@ -175,7 +188,7 @@ void drawBixinho(Bixinho bixinho, int idx){
   float theta = bixinho.theta;
 
   //----- Desenha corpo do bixinho -----//
-  glColor3f(bixinho.r, bixinho.g, bixinho.b);// Bixinho verde
+  glColor3f(bixinho.r, bixinho.g, bixinho.b);
   glBegin(GL_POLYGON);
   for(int i = 0; i < 360; i += 5) {
     glVertex2d( radius*cos(i/180.0*M_PI) + x, radius*sin(i/180.0*M_PI) + y);
@@ -186,7 +199,7 @@ void drawBixinho(Bixinho bixinho, int idx){
   float eyeRadius = radius/8;
   float eyeDist = M_PI/6;
   if(idx == best_index)
-    glColor3f(0.6, 0.6, 1.0);
+    glColor3f(0.1, 0.1, 1.0);
   else
     glColor3f(0, 0, 0);
   glBegin(GL_POLYGON);
@@ -199,7 +212,7 @@ void drawBixinho(Bixinho bixinho, int idx){
 
   //----- Desenha olho esquerdo do bixinho -----//
   if(idx == best_index)
-    glColor3f(0.6, 0.6, 1.0);
+    glColor3f(0.1, 0.1, 1.0);
   else
     glColor3f(0, 0, 0);
   glBegin(GL_POLYGON);

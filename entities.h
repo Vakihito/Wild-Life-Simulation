@@ -19,9 +19,9 @@ using namespace std;
 #define maxMutation 2           // taxa de mutação máxima
 #define energyCostBias 5        // numero multiplicado pelo formula de energia 
 #define timeEnergyCheck 1       // define o tempo em que atualizamos a energia 
-#define enegyAgain 10           // energia ganha ao comer
+#define energyAgain 5           // energia ganha ao comer
 #define generationsEffect 4     // gerações afetadas após pouca mutação
-#define minSumMutation 2     // menor distância da soma de avg, min, max para começargrande mudanca de gerações.  
+#define minSumMutation 0.1      // menor distância da soma de avg, min, max para começar grande mudanca de gerações 
 #define drasticMutation 4       // mutação drástica gerada 
 
 #define minVelocidade 0.3
@@ -31,7 +31,7 @@ using namespace std;
 #define minPercep 0.3
 #define maxPercep 1.0
 
-#define slowness 10
+#define slowness 20
 
 typedef struct _comida {
   float radius;   // comprimento do raio (tamanho)
