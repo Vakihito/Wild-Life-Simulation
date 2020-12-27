@@ -333,7 +333,7 @@ void randomPredation(vector<Bixinho> &pop, float taxaPredacao){
   sort(pop.begin(), pop.end(), compareBixinho);
 
   for(int i = 0; i < numPresas; ++i)
-    pop[i] = gerarBixinho();
+    pop[i+1] = gerarBixinho();
 
   return;
 }
