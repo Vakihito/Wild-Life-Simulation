@@ -41,6 +41,26 @@ Bixinho gerarBixinho(){
   return novo;
 }
 
+Bixinho gerarBixinhoConstante(float taxa){
+  Bixinho novo;
+  vector<float> cor;
+
+  novo.radius = (minRadius + maxRadius) * taxa;
+  novo.percep = (minPercep + maxPercep) * taxa;
+  novo.velocidade = (minVelocidade + maxVelocidade) * taxa;
+  novo.pontos = 0;
+  novo.energia = energiaInicial;
+
+  cor = calcularCor(novo);
+  novo.r = cor[0];
+  novo.g = cor[1];
+  novo.b = cor[2];
+
+  novo.curComida = NULL;
+
+  return novo;
+}
+
 void rotateBixinho(Bixinho *bixinho, float angle){
     bixinho->theta += angle;
 }

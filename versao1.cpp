@@ -17,6 +17,9 @@ using namespace std;
 #define windowHeight 900
 #define PI 3.14159265
 
+#define selecaoNatural '1'
+#define selecaoArtificial '2'
+
 /*
     Inicialmente, andaremos por x dias, os indivíduos durante esse tempo 
     guardam comida. O que tiver mais comida é escolhido como elite. 
@@ -29,10 +32,12 @@ vector<Bixinho> populacao;
 vector<Comida> melao;
 int dia;                      // numero do dia
 int geracao;                  // numero da geracao
+char mode;                    // método de execução do programa
 int best_index;               // index do melhor bixinho
 int qMelao = 50;              // quantidade de comida
 bool applyPredation = false;  // indica se será aplicada a predação na população
 clock_t curTime = clock();
+int dias;                     // dias por geração
 
 //---------- Protótipos de função ----------//
 void draw();                                      // Função para desenhar
@@ -43,10 +48,10 @@ void drawComida(Comida comida);                   // Desenhar comida
 float RandomFloat(float a, float b);              // Gerar float aleatorio
 void inicializarPopulacao();                      // Inicializa posição e outros atributos da população
 void inicializarPosicaoComida();                  // Inicializa posição e outros atributos da comida
-char menu();                                      // Exibe menu inicial na tela
+void menu();                                      // Exibe menu inicial na tela
 
-char menu(){
-  char mode = '0';
+void menu(){
+  mode = '0';
 
   while(mode != '1' && mode != '2' && mode != '4'){
     print_text("Digite o modo de execução do programa:", "green", true);
@@ -66,12 +71,14 @@ char menu(){
     case '3':
       cout << "\n";
       print_text("[@]Seleção Natural:", "blue", true);
+      print_text(">> População inicial constante", "white", true);
       print_text(">> Taxa de mutação constante", "white", true);
       print_text(">> Tamanho da população dinâmico", "white", true);
       print_text(">> Reprodução Assexuada", "white", true);
       print_text(">> Predação sem reposição", "white", true);
       cout << "\n";
       print_text("[@]Seleção Artificial:", "blue", true);
+      print_text(">> População inicial aleatória", "white", true);
       print_text(">> Taxa de mutação dinâmica", "white", true);
       print_text(">> Tamanho da população constante", "white", true);
       print_text(">> Reprodução por Elitismo ou Torneio de 2", "white", true);
@@ -85,22 +92,30 @@ char menu(){
     } 
   }
 
-  return mode;
+  return;
 }
 
 //------------------ Main -----------------//
 int main(int argc, char** argv){
   srand(time(NULL));
 
-  char mode = menu();
+  menu();
   if(mode == '4') return 0;
 
-  dia = 1;
+  dias = (mode == selecaoNatural ? 1 : diasPorGeracao);
+
+  dia = 0;
   geracao = 1;
 
   //inicializa população
-  for(int i = 0; i < populacaoInicial; ++i) 
-    populacao.push_back(gerarBixinho());
+  if(mode == selecaoNatural)
+    for(int i = 0; i < populacaoInicial; ++i) 
+      populacao.push_back(gerarBixinhoConstante(0.4));
+
+  else if(mode == selecaoArtificial)
+    for(int i = 0; i < populacaoInicial; ++i) 
+      populacao.push_back(gerarBixinho());
+
   inicializarPopulacao();
 
   // inicializa as comidas
@@ -176,9 +191,9 @@ void timer(int){
     dia++;
     best_index = chooseBest(populacao);
 
-    if(dia == diasPorGeracao){
+    if(dia == dias){
       curTime = clock();
-      dia = 1;
+      dia = 0;
 
       if(!applyPredation){
         print_text("Geração " + to_string(geracao), "green", true);
@@ -190,11 +205,27 @@ void timer(int){
         print_text("Fitness Médio: ", "yellow", false);
         print_text(to_string(avg_fitness), "white", true);
         print_text("Tamanho da populacao: ", "yellow", false);
-        print_text(to_string(populacao.size()), "white", true);
+        print_text(to_string(size), "white", true);
         writePopulacaoData(populacao, "data.csv", "a", geracao);
 
         best_index = chooseBest(populacao);
-        tournament_2(populacao, best_index);
+
+        if(mode == selecaoArtificial) tournament_2(populacao, best_index);
+
+        else if(mode == selecaoNatural){
+          for(int i = 0; i < size; ++i){
+            if(!populacao[i].active || populacao[i].pontos == 0){ 
+              killBixinho(populacao, i);
+              size = populacao.size();
+              i--;
+            }
+            else{ 
+              if(populacao[i].active && populacao[i].pontos >= avg_fitness) 
+                populacao.push_back(asexualReproduction(populacao[i], mutacaoNatural));
+            }
+          }
+        }
+
         geracao++;
       }
 
@@ -203,10 +234,12 @@ void timer(int){
         randomPredation(populacao, taxaDePredacao);
       }
 
-      if(geracao % geracoesPorPredacao == 1 && geracao != 1 && !applyPredation)
-        applyPredation = true;
+      if(mode == selecaoArtificial){
+        if(geracao % geracoesPorPredacao == 1 && geracao != 1 && !applyPredation)
+          applyPredation = true;
 
-      else applyPredation = false;
+        else applyPredation = false;
+      }
 
       for(int i = 0; i < populacao.size(); ++i)
         populacao[i].pontos = 0;

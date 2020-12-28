@@ -16,6 +16,7 @@ using namespace std;
 #define pontosPorComida 1       // quantidade de pontos obtidos para cada comida coletaa
 #define energiaInicial 10       // valor inicial de energia de um indivíduo
 #define mutacaoBase 0.02        // taxa de mutação de referência
+#define mutacaoNatural 0.2      // taxa de mutação para o modo "Seleção Natural"
 #define maxMutation 0.1         // taxa de mutação máxima
 #define energyCostBias 5        // numero multiplicado pela fórmula de energia 
 #define timeEnergyCheck 1       // define o tempo em que atualizamos a energia 
@@ -84,6 +85,12 @@ vector<float> calcularCor(Bixinho b);
     @return novo bixinho
 */
 Bixinho gerarBixinho();
+/*
+    Produz um individuo com valor de atributos iguais a (min + max) * taxa
+    @param taxa: valor multiplicativo 
+    @return novo bixinho
+*/
+Bixinho gerarBixinhoConstante(float taxa);
 /*
     Verifica a proximidade de um bixinho com uma comida
     @param b: bixinho da análise
