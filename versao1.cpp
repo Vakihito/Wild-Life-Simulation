@@ -36,6 +36,7 @@ char mode;                    // método de execução do programa
 int best_index;               // index do melhor bixinho
 int qMelao = 50;              // quantidade de comida
 bool applyPredation = false;  // indica se será aplicada a predação na população
+bool applyGenocide = false;   // indica se será aplicado o genocídio na população
 clock_t curTime = clock();
 int dias;                     // dias por geração
 
@@ -190,6 +191,7 @@ void timer(int){
   if(!melaoAtivo || !bixinhoAtivo){
     dia++;
     best_index = chooseBest(populacao);
+    if(!bixinhoAtivo) applyGenocide = true;
 
     if(dia == dias){
       curTime = clock();
@@ -210,7 +212,13 @@ void timer(int){
 
         best_index = chooseBest(populacao);
 
-        if(mode == selecaoArtificial) tournament_2(populacao, best_index);
+        if(mode == selecaoArtificial) {
+          if(applyGenocide){
+            genocide(populacao, true, best_index);
+            applyGenocide = false;
+          } 
+          else tournament_2(populacao, best_index);
+        }
 
         else if(mode == selecaoNatural){
           for(int i = 0; i < size; ++i){

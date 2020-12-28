@@ -3,7 +3,6 @@
 
 int startGeneration = -1; // conta as gerações que passaram dês do evento de pouco mutação
 
-
 float RandomFloat(float a, float b){
   float random = ((float) rand()) / (float) RAND_MAX;
   float diff = b - a;
@@ -467,8 +466,11 @@ float variableMutation(vector<Bixinho>populacao, int Best){
 
   if(startGeneration > 0){
     print_text("Aplicando elevada mutação nas próximas " + to_string(startGeneration) + " gerações", "yellow", true);
+    float mutation = drasticMutation * (float(startGeneration)/generationsEffect);
+    print_text("Taxa de mutação: ", "yellow", false);
+    print_text(to_string(mutation), "white", true);
     startGeneration -= 1;
-    return drasticMutation;
+    return mutation;
   }
   
   return taxaMutacao;
