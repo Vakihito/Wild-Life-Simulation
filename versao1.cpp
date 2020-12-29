@@ -191,10 +191,10 @@ void timer(int){
     curTime = clock(); 
     subtractEnergy(populacao);
   }
-
+  best_index = chooseBest(populacao);
   if(!melaoAtivo || !bixinhoAtivo){
     dia++;
-    best_index = chooseBest(populacao);
+    
     if(!bixinhoAtivo) applyGenocide = true;
 
     if(dia == dias){

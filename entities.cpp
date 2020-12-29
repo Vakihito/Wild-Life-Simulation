@@ -186,7 +186,7 @@ int chooseBest(vector<Bixinho> population){
         current.first = i;
         current.second = population[i].pontos;
 
-        if(current.second > best.second){
+        if(current.second > best.second && population[i].active){
             best.first = current.first;
             best.second = current.second;
         }
@@ -370,7 +370,7 @@ Bixinho asexualReproduction(Bixinho b, float taxaMutacao){
   return novo;
 }
 
-void writeBixinhoData(string filename, string mode, Bixinho B, Bixinho Best, int geracao){
+void writeBixinhoData(string filename, string mode, Bixinho B, Bixinho Best, int geracao, float meanDistance){
   FILE *f;
   const char *auxFile = filename.c_str();
   const char *auxMode = mode.c_str();
@@ -383,7 +383,8 @@ void writeBixinhoData(string filename, string mode, Bixinho B, Bixinho Best, int
     fputs((to_string(B.pontos) + ",").c_str(),f);
     fputs((to_string(B.velocidade) + ",").c_str(),f);
     fputs((to_string(B.percep) + ",").c_str(),f);
-    fputs((to_string(distanceBB(B, Best)) + "\n").c_str(),f);
+    fputs((to_string(distanceBB(B, Best)) + ",").c_str(),f);
+    fputs((to_string(meanDistance) + "\n").c_str(),f);
     fclose(f);
   }
 }
@@ -473,11 +474,29 @@ void synthesisPredation(vector<Bixinho> &pop, float taxaPredacao){
   return;
 }
 
+float calculateMeanDistance(vector <Bixinho> populacao){
+  int size_pop = int(populacao.size());
+  float sum = 0.0;
+  for (int i = 1; i < size_pop; i++)
+  {
+    sum += distanceBB(populacao[0],populacao[i]);
+  }
+  return sum/(size_pop - 1);
+}
+
 void writePopulacaoData(vector <Bixinho> &populacao,string filename, string mode, int geracao){
+  if (geracao == 1)
+  {
+    FILE *f = fopen(filename.c_str(), "w+");
+    fputs("geração,radius,energia,pontos,velocidade,percepcao,distance,meanDistance\n",f);
+    fclose(f);
+  }
+  
   int sizePop = int(populacao.size());
   sort(populacao.begin(),populacao.end(), compareBixinho);
+  float meanDistance = calculateMeanDistance(populacao);
   for (int i = 0; i < sizePop; i++)
-    writeBixinhoData(filename, mode ,populacao[i],populacao[0], geracao);
+    writeBixinhoData(filename, mode ,populacao[i],populacao[0], geracao, meanDistance);
 }
 
 float calculateTaxaMutacao(float maxDistance, float minDistance, float meanDistance){
