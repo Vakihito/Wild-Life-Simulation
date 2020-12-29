@@ -296,6 +296,47 @@ void tournament_2(vector<Bixinho> &pop, int best){
   return;
 }
 
+void roulette(vector<Bixinho> &pop, int best){
+  vector<Bixinho> next_gen;
+  vector<float> pontos;
+  Bixinho cur;
+  int size = pop.size();
+  float taxaMutacao = variableMutation(pop, best);
+
+  next_gen.push_back(pop[best]);
+
+  int sum = 0;
+  float prob_sum;
+  pair<int,int> prob;
+  pair<int,int> parent_index;
+
+  for(int i = 0; i < size; ++i)
+    sum += pop[i].pontos;
+  
+  for(int i = 0; i < size; ++i)
+    pontos.push_back(100*(pop[i].pontos/sum));
+
+  for(int i = 1; i < size; ++i){
+    prob = {rand()%101, rand()%101};
+    prob_sum = 0;
+    parent_index = {-1, -1};
+    for(int i = 0; i < size; ++i){
+      if(parent_index.first == -1 && float(prob.first) <= prob_sum + pontos[i]) parent_index.first = i;
+      if(parent_index.second == -1 && float(prob.second) <= prob_sum + pontos[i]) parent_index.second = i;
+      if(parent_index.first != -1 && parent_index.second != -1) break;
+      prob_sum += pontos[i];
+    }
+    cur = crossover(pop[parent_index.first], pop[parent_index.second], taxaMutacao);
+    next_gen.push_back(cur);
+  }
+
+  // substitui a população atual pela nova
+  for(int i = 0; i < size; ++i) 
+    pop[i] = next_gen[i];
+
+  return;
+}
+
 Bixinho asexualReproduction(Bixinho b, float taxaMutacao){
   Bixinho novo;
   vector<float> color;
@@ -465,13 +506,15 @@ float variableMutation(vector<Bixinho>populacao, int Best){
   float taxaMutacao = calculateTaxaMutacao(maxDistance, minDistance, meanDistance);
 
   if(startGeneration > 0){
-    print_text("Aplicando elevada mutação nas próximas " + to_string(startGeneration) + " gerações", "yellow", true);
+    print_text("Aplicando elevada mutação nas próximas " + to_string(startGeneration) + " gerações", "red", true);
     float mutation = drasticMutation * (float(startGeneration)/generationsEffect);
-    print_text("Taxa de mutação: ", "yellow", false);
-    print_text(to_string(mutation), "white", true);
     startGeneration -= 1;
+    print_text("Taxa de mutação: ", "blue", false);
+    print_text(to_string(mutation), "white", true);
     return mutation;
   }
   
+  print_text("Taxa de mutação: ", "blue", false);
+  print_text(to_string(taxaMutacao), "white", true);
   return taxaMutacao;
 }

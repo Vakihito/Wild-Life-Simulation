@@ -21,7 +21,7 @@ using namespace std;
 #define energyCostBias 5        // numero multiplicado pela fórmula de energia 
 #define energyAgain 2           // energia ganha ao comer
 #define generationsEffect 4     // gerações afetadas após pouca mutação
-#define minSumMutation 4.0      // menor distância da soma de avg, min, max para começar grande mudanca de gerações 
+#define minSumMutation 0.3      // menor distância da soma de avg, min, max para começar grande mudanca de gerações 
 #define drasticMutation 4       // mutação drástica gerada 
 
 #define minVelocidade 0.2
@@ -225,6 +225,12 @@ void elitism(vector<Bixinho> &pop, int best);
     @param best: índice do melhor indivíduo
 */
 void tournament_2(vector<Bixinho> &pop, int best);
+/*
+    Aplica o método de reprodução por roleta na população
+    @param pop: população
+    @param best: índice do melhor indivíduo
+*/
+void roulette(vector<Bixinho> &pop, int best);
 /*
     Aplica o método de reprodução assexuada em um indivíduo
     @param b: bixinho original

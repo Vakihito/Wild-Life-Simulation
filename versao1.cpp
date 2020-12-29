@@ -82,8 +82,8 @@ void menu(){
       print_text(">> População inicial aleatória", "white", true);
       print_text(">> Taxa de mutação dinâmica", "white", true);
       print_text(">> Tamanho da população constante", "white", true);
-      print_text(">> Reprodução por Elitismo ou Torneio de 2", "white", true);
-      print_text(">> Predação com reposição (Predação Randômica ou Predação por Síntese)", "white", true);
+      print_text(">> Reprodução por Elitismo, Torneio de 2 ou Roleta", "white", true);
+      print_text(">> Predação com reposição (Predação Randômica ou Predação por Síntese) e Genocídio", "white", true);
       cout << "\n";
     case '4':
       break;
@@ -217,7 +217,7 @@ void timer(int){
             genocide(populacao, true, best_index);
             applyGenocide = false;
           } 
-          else tournament_2(populacao, best_index);
+          else roulette(populacao, best_index);
         }
 
         else if(mode == selecaoNatural){
