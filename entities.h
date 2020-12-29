@@ -285,11 +285,28 @@ void synthesisPredation(vector<Bixinho> &pop, float taxaPredacao);
     @return valor da taxa de mutação
 */
 float variableMutation(vector<Bixinho>populacao, int Best);
-
+/*
+    Escreve os dados de um bixinho no arquivo de nome especificado
+    @param populacao: população que terá os dados armazenados
+    @param filename: nome do arquivo 
+    @param mode: método de manipulação do arquivo
+    @param geracao: número da geração à qual o bixinho pertence
+*/
 void writePopulacaoData(vector <Bixinho> &populacao,string filename, string mode, int geracao);
-
-float variableMutation(vector<Bixinho>populacao, int Best);
-
+/*  
+    Calcula uma taxa de mutação com base nas distâncias dos cromossomos (r,g,b)
+    @param maxDistance: maior distância dos valores dos atributos de dois indivíduos
+    @param minDistance: menor distância dos valores dos atributos de dois indivíduos
+    @param meanDistance: distância média dos valores dos atributos de dois indivíduos
+    @return taxa de mutação resultante
+*/
+float calculateTaxaMutacao(float maxDistance, float minDistance, float meanDistance);
+/*
+    Calcula a distância euclidiana dos valores (r,g,b) de dois bixinhos
+    @param a: primeiro bixinho
+    @param b: segundo bixinho
+    @return distância resultante
+*/
 float distanceBB(Bixinho a, Bixinho b);
 
 #endif

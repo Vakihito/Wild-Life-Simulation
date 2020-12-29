@@ -20,10 +20,14 @@ using namespace std;
 #define selecaoNatural '1'
 #define selecaoArtificial '2'
 
-/*
-    Inicialmente, andaremos por x dias, os indivíduos durante esse tempo 
-    guardam comida. O que tiver mais comida é escolhido como elite. 
-    Dessa forma, ao final do processo, podemos fazer toneio de 2 ou elitismo.
+/*  
+    Ao iniciar o programa, estarão disponíveis dois métodos de execução,
+    descritos no campo "Detalhes" do menu. Os bixinhos percorrerão o mapa 
+    ao longo de um número de dias para coletar a maior quantidade de possível
+    de alimento. Ao término do período, aquele que tiver maior pontuação (definida
+    pela quantidade de alimento coletado), será definido como "melhor de todos" e 
+    mantido para a próxima geração. A população então passará pelo processo de reprodução,
+    associada a uma taxa de mutação para definir os novos individuos. 
 
     Como compilar : g++ -c entities.cpp && g++ -c util.cpp && g++ entities.o util.o versao1.cpp -lglut -lGLU -lGL && ./a.out
 */
@@ -214,10 +218,11 @@ void timer(int){
 
         if(mode == selecaoArtificial) {
           if(applyGenocide){
+            print_text("Aplicando genocidio...", "red", true);
             genocide(populacao, true, best_index);
             applyGenocide = false;
           } 
-          else roulette(populacao, best_index);
+          else elitism(populacao, best_index);
         }
 
         else if(mode == selecaoNatural){
@@ -341,8 +346,10 @@ void drawComida(Comida comida){
 void inicializarPopulacao() {
   int r = 1;
   for(int i = 0; i < populacao.size(); ++i) {
+    // define energia e ativação para os valores padrão 
     populacao[i].energia = energiaInicial;
     populacao[i].active = true;
+    // inicializa ângulo e posição iniciais
     populacao[i].theta = (360*i)/populacaoInicial;
     populacao[i].x = r*cos(populacao[i].theta);
     populacao[i].y = r*sin(populacao[i].theta);

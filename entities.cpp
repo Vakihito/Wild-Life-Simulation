@@ -23,19 +23,19 @@ vector<float> calcularCor(Bixinho b){
 Bixinho gerarBixinho(){
   Bixinho novo;
   vector<float> cor;
-
+  // obtém valores aleatórios no intervalo associado ao atributo
   novo.radius = RandomFloat(minRadius, maxRadius);
   novo.percep = RandomFloat(minPercep, maxPercep);
   novo.velocidade = RandomFloat(minVelocidade, maxVelocidade);
+  // estabelece valores padrão para os atributos
   novo.pontos = 0;
   novo.energia = energiaInicial;
-
+  novo.curComida = NULL;
+  // calcula e armazena a cor do individuo
   cor = calcularCor(novo);
   novo.r = cor[0];
   novo.g = cor[1];
   novo.b = cor[2];
-
-  novo.curComida = NULL;
 
   return novo;
 }
@@ -44,18 +44,19 @@ Bixinho gerarBixinhoConstante(float taxa){
   Bixinho novo;
   vector<float> cor;
 
+  // calcula valor dos atributos
   novo.radius = (minRadius + maxRadius) * taxa;
   novo.percep = (minPercep + maxPercep) * taxa;
   novo.velocidade = (minVelocidade + maxVelocidade) * taxa;
+  // estabelece valores padrão para os atributos
   novo.pontos = 0;
   novo.energia = energiaInicial;
-
+  novo.curComida = NULL;
+  // calcula e armazena a cor do individuo
   cor = calcularCor(novo);
   novo.r = cor[0];
   novo.g = cor[1];
   novo.b = cor[2];
-
-  novo.curComida = NULL;
 
   return novo;
 }
@@ -87,14 +88,17 @@ bool moveRandom(Bixinho *b){
 }
 
 void killBixinho(vector<Bixinho> &populacao, int idx){
+  // remove individuo do vetor da população
   populacao.erase(populacao.begin() + idx);
 }
 
 float energyCost(Bixinho b){
+  // calcula custo energético do bixinho com base na sua velocidade e raio
   return ((b.radius * b.velocidade * b.velocidade)/2);   
 }
 
 void subtractEnergy(vector<Bixinho> &populacao){
+  // decrementa energia da população considerando o custo individual associado, desativando-os quando necessário 
   for(int i = 0; i < int(populacao.size()); i++){
     populacao[i].energia = populacao[i].energia -(energyCost(populacao[i]) * energyCostBias);
     if(populacao[i].energia <= 0)
@@ -302,31 +306,38 @@ void roulette(vector<Bixinho> &pop, int best){
   Bixinho cur;
   int size = pop.size();
   float taxaMutacao = variableMutation(pop, best);
-
+  
+  // armazena melhor de todos na nova população
   next_gen.push_back(pop[best]);
 
-  int sum = 0;
-  float prob_sum;
-  pair<int,int> prob;
-  pair<int,int> parent_index;
+  int sum = 0;                  // somatório da pontuação
+  float prob_sum;               // probabilidade acumulada
+  pair<int,int> prob;           // valor de comparação para escolha dos pais
+  pair<int,int> parent_index;   // índice dos pais
 
+  // calcula somatório
   for(int i = 0; i < size; ++i)
     sum += pop[i].pontos;
-  
+  // calcula probabilidade de escolha de cada individuo 
   for(int i = 0; i < size; ++i)
     pontos.push_back(100*(pop[i].pontos/sum));
-
+  // realiza reposição da população
   for(int i = 1; i < size; ++i){
-    prob = {rand()%101, rand()%101};
-    prob_sum = 0;
-    parent_index = {-1, -1};
+    prob = {rand()%101, rand()%101};  // gera valores aleatórios para escolha dos pais
+    prob_sum = 0;                     // inicializa valor acumulado
+    parent_index = {-1, -1};          // inicializa índices
     for(int i = 0; i < size; ++i){
+      // analisa se a posição atual é um dos pais
       if(parent_index.first == -1 && float(prob.first) <= prob_sum + pontos[i]) parent_index.first = i;
       if(parent_index.second == -1 && float(prob.second) <= prob_sum + pontos[i]) parent_index.second = i;
+      // avalia parada (os pais foram escolhidos)
       if(parent_index.first != -1 && parent_index.second != -1) break;
+      // atualiza valor acumulado
       prob_sum += pontos[i];
     }
+    // realiza crossover dos pais para obtenção do filho
     cur = crossover(pop[parent_index.first], pop[parent_index.second], taxaMutacao);
+    // insere individuo
     next_gen.push_back(cur);
   }
 
@@ -340,17 +351,17 @@ void roulette(vector<Bixinho> &pop, int best){
 Bixinho asexualReproduction(Bixinho b, float taxaMutacao){
   Bixinho novo;
   vector<float> color;
-
+  // estabelece valores padrão para os atributos
   novo.curComida = NULL;
   novo.pontos = 0;
   novo.energia = energiaInicial;
-
+  // calcula valor dos atributos a partir do bixinho original, associando também um valor de mutação
   novo.radius = b.radius + mutation(minRadius, maxRadius, taxaMutacao);
   novo.percep = b.percep + mutation(minPercep, maxPercep, taxaMutacao);
   novo.velocidade = b.velocidade + mutation(minVelocidade, maxVelocidade, taxaMutacao);
-
+  // avalia cromossomos
   checkChromosomes(&novo);
-
+  // calcula e armazena cor do novo bixinho
   color = calcularCor(novo);
   novo.r = color[0];
   novo.g = color[1];
@@ -383,8 +394,9 @@ bool compareBixinho(const Bixinho &a, const Bixinho &b){
 
 void genocide(vector<Bixinho> &pop, bool manterMelhorVivo, int idx){
   int size = pop.size();
-
+  // analisa a necessidade de manutenção do melhor de todos na nova população
   pop[0] = manterMelhorVivo ? pop[idx] : gerarBixinho();
+  // substitui demais bixinhos
   for(int i = 1; i < size; ++i)
     pop[i] = gerarBixinho();
 
@@ -393,10 +405,11 @@ void genocide(vector<Bixinho> &pop, bool manterMelhorVivo, int idx){
 
 void randomPredation(vector<Bixinho> &pop, float taxaPredacao){
   int size = pop.size();
+  // calcula o número de indivíduos que serão predados 
   int numPresas = min(float(size-1), max(float(1), taxaPredacao * size));
-
+  // ordena a população pela ordem decrescente da pontuação
   sort(pop.begin(), pop.end(), compareBixinho);
-
+  // substitui o bixinho por um novo
   for(int i = 0; i < numPresas; ++i)
     pop[size - (i+1)] = gerarBixinho();
 
@@ -425,32 +438,32 @@ void synthesisPredation(vector<Bixinho> &pop, float taxaPredacao){
   sintese.curComida = NULL;
 
   sort(pop.begin(), pop.end(), compareBixinho);
-
+  // calcula o somatório dos valores de cada atributo
   for(int i = 0; i < size; ++i){
     sintese.radius += pop[i].radius;
     sintese.percep += pop[i].percep;
     sintese.velocidade += pop[i].velocidade;
   }
-
+  // calcula a média dos valores
   sintese.radius /= size;
   sintese.percep /= size;
   sintese.velocidade /= size;
-
+  // verifica os intervalos permitidos
   checkChromosomes(&sintese);
-
+  // calcula e armazena a cor do primeiro individuo que fará a reposição 
   cor = calcularCor(sintese);
   sintese.r = cor[0];
   sintese.g = cor[1];
   sintese.b = cor[2];
-
+  // substitui o pior bixinho pelo bixinho médio
   pop[size - 1] = sintese;
-
+  // para os outros novos bixinhos, atribui os valores dos cromossomos do bixinho calculado anteriormente, adicionanado um valor de mutação
   for(int i = 0; i < numPresas-1; ++i){
     pop[size-i-2] = gerarBixinhoLimpo();
     pop[size-i-2].radius = sintese.radius + mutation(minRadius, maxRadius, mutacaoBase);
     pop[size-i-2].percep = sintese.percep + mutation(minPercep, maxPercep, mutacaoBase);
     pop[size-i-2].velocidade = sintese.velocidade + mutation(minVelocidade, maxVelocidade, mutacaoBase);
-
+    // calcula e armazena a cor do bixinho
     cor = calcularCor(pop[i+2]);
     pop[size-i-2].r = cor[0];
     pop[size-i-2].g = cor[1];
