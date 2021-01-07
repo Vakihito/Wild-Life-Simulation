@@ -29,6 +29,8 @@ Em relação aos notebooks a baixo verificamos a distribuição de indivíduos, 
 Neste notebook, fazemos análises das diferentes heurísticas, em relação ao número de indivíduos e distância média entre os indivíduos de uma geração e o melhor da geração.
  - **Análise**: [Análises](https://colab.research.google.com/drive/1E2C6wToPrB1EkcMeVv_g5VoCWY3v7UaF?usp=sharing) 
 
+---
+
 <p align="center">
 <img src="https://github.com/Vakihito/Wild-Life-Simulation/blob/main/wild.gif" width="600"/>
 </p>
