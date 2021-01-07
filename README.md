@@ -18,7 +18,8 @@ Ou simplesmente execute: <code>make runA</code>
 ---
 
 ### Análises
-Nestes nootebooks pode-se encontrar algumas análises das diferentes heurísticas que foram feitas ao longo das gerações. *Estes nootbooks só estão liberados à pessoas de email USP, caso queira acesso, enviar email para: akihito012@usp.br*
+Nestes nootebooks pode-se encontrar algumas análises das diferentes heurísticas que foram feitas ao longo das gerações. 
+*obs: Estes nootbooks só estão liberados à pessoas de email USP, caso queira acesso, enviar email para: akihito012@usp.br*
 
 Em relação aos notebooks a baixo verificamos a distribuição de indivíduos, com base em seus genes (raio, velocidade e percepção), os dados estão normalizados com base nos dados dos indivíduos apresentados no gráfico. Além disso, indivíduos de cooloração mais viva apresentam cor mais clara.
  - **Elitismo**: [Elitismo](https://colab.research.google.com/drive/1n7B501ufRxevHtluHJtugB5h8x1YULJ0?usp=sharing)
