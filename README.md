@@ -11,7 +11,7 @@ Este projeto tem como objetivo simularcomo animais se comportariam em um ambient
 
 Para a execução deste projeto precisamos inicialmente instalar OpenGL para C++.
 
-Para compilar deve-se compilar o código : <code>make</code>
+Para compilar deve-se usar o comando: <code>make</code>
 
 Para se executar o executável criado: <code>make run</code>
 
